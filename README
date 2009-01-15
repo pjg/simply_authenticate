@@ -1,0 +1,46 @@
+SimplyAuthenticate
+==================
+
+Simple Rails plugin providing ...
+
+
+
+Installation
+============
+
+git clone git://github.com/pjg/simply_authenticate.git vendor/plugins
+
+
+script/generate model user
+script/generate model role
+
+
+script/generate controller
+
+
+
+
+
+config/routes.rb
+  # User.send(:include, SimplyAuthenticate::UserExtension) if defined?(User)
+  map.authentication_routes
+
+
+FAQ
+===
+
+Changing paths of named routes
+------------------------------
+vim config/initializers/simply_authenticate.rb
+
+SimplyAuthenticate::Settings.route_names[:login_path] = 'login'
+
+See: simply_authenticate/lib/settings.rb
+
+
+
+Examples
+========
+
+
+Copyright (c) 2009 Paweł Gościcki, released under the MIT license
