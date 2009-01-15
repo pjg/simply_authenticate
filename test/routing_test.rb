@@ -1,6 +1,6 @@
 require "#{File.dirname(__FILE__)}/test_helper"
 
-class RoutingTest < Test::Unit::TestCase # ActiveSupport::TestCase 
+class RoutingTest < Test::Unit::TestCase
 
   def setup
     ActionController::Routing::Routes.draw do |map|

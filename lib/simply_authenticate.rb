@@ -1,3 +1,4 @@
+require 'exceptions'
 require 'helpers'
 require 'routing'
 require 'settings'
@@ -10,6 +11,9 @@ ActionView::Base.send :include, SimplyAuthenticate::Helpers
 
 # Helpers will be available in all controllers
 ActionController::Base.send :include, SimplyAuthenticate::Helpers
+
+# Exceptions will be available in all controllers
+ActionController::Base.send :include, SimplyAuthenticate::Exceptions
 
 # Before filters (will be run for every action in every controller)
 ActionController::Base.send :prepend_before_filter, :load_user
