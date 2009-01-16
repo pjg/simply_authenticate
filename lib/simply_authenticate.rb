@@ -1,10 +1,13 @@
+require 'acts_as_authenticated'
+require 'acts_as_authenticated_role'
 require 'exceptions'
 require 'helpers'
 require 'routing'
 require 'settings'
 
-# acts_as_authenticated for ActiveRecord models
+# acts_as_authenticated & acts_as_authenticated_role for ActiveRecord's models
 ActiveRecord::Base.send :include, SimplyAuthenticate::ActsAsAuthenticated
+ActiveRecord::Base.send :include, SimplyAuthenticate::ActsAsAuthenticatedRole
 
 # Helpers will be available in the views
 ActionView::Base.send :include, SimplyAuthenticate::Helpers

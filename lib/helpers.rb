@@ -38,32 +38,4 @@ module SimplyAuthenticate
     end
   end
 
-  # acts_as_authenticated and acts_as_authenticated_role methods for ActiveRecord user & role objects
-  module ActsAsAuthenticated
-    def self.included(base)
-      base.send :extend, ClassMethods
-    end
-
-    module ClassMethods 
-      # User
-      def acts_as_authenticated
-        send :include, InstanceMethods
-        has_and_belongs_to_many :roles
-      end
-
-      # Role
-      def acts_as_authenticated_role
-        has_and_belongs_to_many :users
-        validates_uniqueness_of :function, :message => "istnieje już taka rola w systemie"
-      end
-    end
-
-    # User
-    module InstanceMethods
-      def testing
-        "acts_as: 123"
-      end
-    end
-  end
-
 end
