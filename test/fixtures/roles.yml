@@ -1,0 +1,11 @@
+user_role:
+  function: user
+  name: Użytkownik
+
+administrator_role:
+  function: administrator
+  name: Administrator
+
+editor_role:
+  function: editor
+  name: Redaktor
