@@ -1,0 +1,67 @@
+bob:
+  salt: 1000
+  email: bob@bob.com
+  name: Bob
+  slug: bob
+  hashed_password: 77a0d943cdbace52716a9ef9fae12e45e2788d39
+  activation_code: 123
+  activated_on: 2007-11-11 11:11:11
+  created_on: 2007-11-11 11:11:11
+  roles: user_role
+
+administrator:
+  salt: 1000
+  email: john@john.com
+  name: John Kovalsky
+  slug: john-kovalsky
+  hashed_password: 77a0d943cdbace52716a9ef9fae12e45e2788d39
+  activation_code: 234
+  activated_on: 2007-10-10 10:10:10
+  new_email_activation_code: 1234
+  created_on: 2007-11-11 11:11:11
+  roles: user_role, administrator_role
+
+inactivated:
+  salt: 1000
+  email: bill@bill.com
+  name: Bill Inactivated
+  slug: bill-inactivated
+  hashed_password: 77a0d943cdbace52716a9ef9fae12e45e2788d39
+  activation_code: 345
+  activated_on: nil
+  created_on: 2007-11-11 11:11:11
+  roles: user_role
+
+blocked_inactivated:
+  salt: 1000
+  email: slavik@slavik.com
+  name: Slavik
+  slug: slavik
+  hashed_password: 77a0d943cdbace52716a9ef9fae12e45e2788d39
+  activation_code: 456
+  activated_on: nil
+  is_blocked: 1
+  created_on: 2007-11-11 11:11:11
+  roles: user_role
+
+blocked_activated:
+  salt: 1000
+  email: kyrlie@kyrlie.com
+  name: Kyrlie
+  slug: kyrlie
+  hashed_password: 77a0d943cdbace52716a9ef9fae12e45e2788d39
+  activation_code: 567
+  activated_on: 2007-10-10 10:10:10
+  is_blocked: 1
+  created_on: 2007-11-11 11:11:11
+  roles: user_role
+
+editor:
+  salt: 1000
+  email: editor@times.co.uk
+  name: JamEdytorSam
+  slug: jamedytorsam
+  hashed_password: 77a0d943cdbace52716a9ef9fae12e45e2788d39
+  activated_on: 2007-10-10 10:10:10
+  created_on: 2007-11-11 11:11:11
+  roles: user_role, editor_role

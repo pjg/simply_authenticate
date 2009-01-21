@@ -4,6 +4,21 @@ SimplyAuthenticate
 Simple Rails plugin providing ...
 
 
+Requirements
+============
+Requires the String class to have .to_slug method defined.
+This can be provided by installing my ruby_extensions plugin:
+
+git submodule add git://github.com/pjg/ruby_extensions.git vendor/plugins/ruby_extensions
+
+or
+
+script/plugin install git://github.com/pjg/ruby_extensions.git
+
+This also requires the unidecode gem:
+
+gem install unidecode
+
 
 Installation
 ============
@@ -17,13 +32,15 @@ script/generate model role
 
 script/generate controller
 
-
+scrip/generate mailer Notifications (or something)
 
 
 
 config/routes.rb
   # User.send(:include, SimplyAuthenticate::UserExtension) if defined?(User)
   map.authentication_routes
+
+
 
 
 FAQ

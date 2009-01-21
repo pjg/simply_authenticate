@@ -2,6 +2,7 @@ module SimplyAuthenticate
 
   # A bunch of custom exceptions to handle authentication logic
   module Exceptions
+    class ArgumentError < StandardError; end
     class UnauthorizedWrongEmail < StandardError; end
     class UnauthorizedWrongPassword < StandardError; end
     class UnauthorizedNotActivated < StandardError; end

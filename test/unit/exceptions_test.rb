@@ -4,6 +4,7 @@ class ExceptionsTest < Test::Unit::TestCase
 
   def test_exceptions
     exceptions = [
+      SimplyAuthenticate::Exceptions::ArgumentError,
       SimplyAuthenticate::Exceptions::UnauthorizedWrongEmail,
       SimplyAuthenticate::Exceptions::UnauthorizedWrongPassword,
       SimplyAuthenticate::Exceptions::UnauthorizedNotActivated,

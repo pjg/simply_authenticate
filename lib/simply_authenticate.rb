@@ -1,3 +1,5 @@
+require 'digest/sha1'
+
 require 'acts_as_authenticated'
 require 'acts_as_authenticated_role'
 require 'exceptions'
