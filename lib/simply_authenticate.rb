@@ -1,12 +1,13 @@
 require 'digest/sha1'
 
+require 'settings'
+require 'exceptions'
+require 'routing'
+require 'helpers'
+
 require 'acts_as_authenticated'
 require 'acts_as_authenticated_role'
 require 'acts_as_authenticated_mailer'
-require 'exceptions'
-require 'helpers'
-require 'routing'
-require 'settings'
 
 # acts_as_authenticated & acts_as_authenticated_role for ActiveRecord's models
 ActiveRecord::Base.send :include, SimplyAuthenticate::ActsAsAuthenticated

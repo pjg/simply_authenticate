@@ -49,7 +49,7 @@ end
 # Setup models
 class Role < ActiveRecord::Base
   acts_as_authenticated_role
-end 
+end
 
 class User < ActiveRecord::Base
   acts_as_authenticated

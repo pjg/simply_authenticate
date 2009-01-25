@@ -65,3 +65,13 @@ editor:
   activated_on: 2007-10-10 10:10:10
   created_on: 2007-11-11 11:11:11
   roles: user_role, editor_role
+
+moderator:
+  salt: 1000
+  email: moderator@censors-united.org
+  name: ModMeUp
+  slug: modmeup
+  hashed_password: 77a0d943cdbace52716a9ef9fae12e45e2788d39
+  activated_on: 2007-10-10 10:10:10
+  created_on: 2007-11-11 11:11:11
+  roles: user_role, moderator_role

@@ -1,34 +1,35 @@
 SimplyAuthenticate
 ==================
 
-Simple Rails plugin providing ...
+Rails plugin providing a relatively simple but quite complete authentication system with roles (many-to-many relationship).
 
 
 Requirements
 ============
-Requires the String class to have .to_slug method defined.
-This can be provided by installing my ruby_extensions plugin:
 
-git submodule add git://github.com/pjg/ruby_extensions.git vendor/plugins/ruby_extensions
+Rails version 2.2.2+
 
-or
+String class needs to have the .to_slug method defined. This can be provided by installing my ruby_extensions plugin:
 
-script/plugin install git://github.com/pjg/ruby_extensions.git
+  git submodule add git://github.com/pjg/ruby_extensions.git vendor/plugins/ruby_extensions
 
-This also requires the unidecode gem:
 
-gem install unidecode
+The following gems must be installed: unidecode (for reliable .to_slug), redgreen, sqlite3-ruby (for testing):
+
+  gem install unidecode
+  gem install redgreen
+  gem install sqlite3-ruby
 
 
 Installation
 ============
 
-git clone git://github.com/pjg/simply_authenticate.git vendor/plugins
+git clone git://github.com/pjg/simply_authenticate.git vendor/plugins/simply_authenticate
 
 
 script/generate model user
 script/generate model role
-
++ migrations...
 
 script/generate controller
 
@@ -41,6 +42,10 @@ i config/initializers/simply_authenticate.rb
 SimplyAuthenticate::Settings.notifications[:application] = 'TylkoZyczenia.pl'
 SimplyAuthenticate::Settings.notifications[:host] = "tylkozyczenia.pl"
 SimplyAuthenticate::Settings.notifications[:email] = 'poczta@tylkozyczenia.pl'
+
+SimplyAuthenticate::Settings.roles = [:user, :administrator]
+# user is the default role (required), other roles may be left undefined
+# each role must have a corresponding database entry in the 'roles' table
 
 config/routes.rb
   # User.send(:include, SimplyAuthenticate::UserExtension) if defined?(User)

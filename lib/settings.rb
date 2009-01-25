@@ -36,7 +36,10 @@ module SimplyAuthenticate
       :email => 'poczta@localhost'
     }
 
-    mattr_accessor :controller_name, :path_names, :notifications
+    # Roles (assigned to users)
+    @@roles = [:user, :administrator, :editor, :moderator]
+
+    mattr_accessor :controller_name, :path_names, :notifications, :roles
   end
 
 end

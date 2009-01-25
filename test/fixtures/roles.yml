@@ -9,3 +9,7 @@ administrator_role:
 editor_role:
   function: editor
   name: Redaktor
+
+moderator_role:
+  function: moderator
+  name: Moderator

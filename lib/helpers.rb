@@ -15,11 +15,11 @@ module SimplyAuthenticate
       redirect_to login_path
     end
 
-    # FILTER: user is loaded for every page view
+    # FILTER (user is loaded for every page view)
     def load_user
       # from session
       @current_user = User.find(session[:user_id]) if session[:user_id]
-      
+ 
       # from cookie
       # we store 'autologin_token' (hash of email, salt and expiration date) in user's cookie and in the database
       return unless cookies[:autologin_token] && !logged_in?
@@ -40,17 +40,15 @@ module SimplyAuthenticate
     end
 
     # Dynamic methods definitions (for roles)
-    # Unfortunately ActiveRecord models are not yet fully 'activated' so we must go with straight SQL
-    ActiveRecord::Base.connection.select_all('SELECT function FROM roles').each do |role|
+    SimplyAuthenticate::Settings.roles.each do |role|
       # HELPERS: editor? administrator? etc. for views/controllers
-      define_method "#{role['function']}?" do
-        logged_in? && @current_user && @current_user.roles.collect {|r| r.function == role['function']}.any?
+      define_method "#{role.to_s}?" do
+        logged_in? && @current_user && @current_user.roles.any? {|r| r.function == role.to_s}
       end
 
       # FILTERS: editor_role_required administrator_role_required etc. for controllers
-      define_method "#{role['function']}_role_required" do
-        #return if editor?
-        return if send "#{role['function']}?"
+      define_method "#{role.to_s}_role_required" do
+        return if send("#{role.to_s}?")
         flash[:warning] = 'Brak wymaganych uprawnień'
         redirect_to root_path
       end
