@@ -105,9 +105,12 @@ class ActsAsAuthenticatedTest < Test::Unit::TestCase
   end
 
   def test_random_string
-    new_pass = User.random_string(10)
-    assert_not_nil new_pass
-    assert_equal 10, new_pass.length
+    (1..10).each do
+      new_pass = User.random_string(10)
+      assert_not_nil new_pass
+      assert_equal new_pass.length, 10
+      assert new_pass.match(/[a-zA-Z0-9]{10}/)
+    end
   end
 
   def test_slug_creation
@@ -148,6 +151,10 @@ class ActsAsAuthenticatedTest < Test::Unit::TestCase
     assert_equal "Very Bad Bob", u.name
   end
 
+  def test_email_address_with_name
+    assert_equal @bob.email_address_with_name, "#{@bob.name} <#{@bob.email}>"
+  end
+
   def test_invalid_authentication
     assert_raise(SimplyAuthenticate::Exceptions::UnauthorizedWrongEmail) {User.authenticate("random@email.com", "test")}
     assert_raise(SimplyAuthenticate::Exceptions::UnauthorizedWrongPassword) {User.authenticate("bob@bob.com", "wrong-password")}
@@ -179,7 +186,7 @@ class ActsAsAuthenticatedTest < Test::Unit::TestCase
     assert !u.activated?
 
     # activate user
-    u = User.find_and_activate!('345')
+    u = User.find_and_activate!(@inactivated.activation_code)
     assert_equal u, @inactivated
     assert u.activated?
   end

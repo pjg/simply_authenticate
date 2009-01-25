@@ -1,0 +1,6 @@
+Aby dokończyć rejestrację w serwisie <%= SimplyAuthenticate::Settings.notifications[:application] %> musisz aktywować swoje konto poprzez kliknięcie w link poniżej:
+
+<%= activation_url(:host => SimplyAuthenticate::Settings.notifications[:host], :activation_code => @activation_code) %>
+
+
+Jeżeli otrzymałeś tę wiadomość przez przypadek, to zgłoś to na adres: <%= SimplyAuthenticate::Settings.notifications[:email] %>.

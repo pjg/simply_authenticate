@@ -2,6 +2,7 @@ require 'digest/sha1'
 
 require 'acts_as_authenticated'
 require 'acts_as_authenticated_role'
+require 'acts_as_authenticated_mailer'
 require 'exceptions'
 require 'helpers'
 require 'routing'
@@ -28,3 +29,7 @@ ActionController::Base.send :filter_parameter_logging, :password, :password_conf
 
 # Named routes definitions
 ActionController::Routing::RouteSet::Mapper.send :include, SimplyAuthenticate::Routing::MapperExtensions
+
+# Notifications mailer setup
+ActionMailer::Base.send :include, SimplyAuthenticate::ActsAsAuthenticatedMailer
+ActionMailer::Base.template_root = File.expand_path(File.dirname(__FILE__) + '/../views/')

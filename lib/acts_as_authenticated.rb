@@ -54,6 +54,7 @@ module SimplyAuthenticate
             user = find_by_email(email)
             raise SimplyAuthenticate::Exceptions::UnauthorizedWrongEmail if !user
             user.send_activation_code
+            user
           end
 
           def self.find_and_activate!(activation_code)
@@ -62,6 +63,7 @@ module SimplyAuthenticate
             raise SimplyAuthenticate::Exceptions::BadActivationCode if !user
             raise SimplyAuthenticate::Exceptions::AlreadyActivated if user.activated?
             raise SimplyAuthenticate::Exceptions::UnauthorizedAccountBlocked if user.blocked?
+            # must use update_attribute because activated_on is a protected attribute and we cannot update it using update_attributes
             user.update_attribute(:activated_on, Time.now.utc)
             user
           end
@@ -72,9 +74,9 @@ module SimplyAuthenticate
             new_pass = self.random_string(10)
             user.password = user.password_confirmation = new_pass
             user.save
-            user.send_forgot_password(new_pass)
+            user.send_forgot_password
+            user
           end
-
 
           protected
 
@@ -85,16 +87,13 @@ module SimplyAuthenticate
           # generate a random password consisting of characters and digits
           def self.random_string(len)
             chars = ("a".."z").to_a + ("A".."Z").to_a + ("0".."9").to_a
-            newpass = ""
-            1.upto(len) {|i| newpass << chars[rand(chars.size-1)]}
-            return newpass
+            1.upto(len).inject('') {|result, element| result + chars[rand(chars.size - 1)]}
           end
 
         end
       end
 
     end
-
 
     module InstanceMethods
 
@@ -104,36 +103,45 @@ module SimplyAuthenticate
         errors.add(:new_email, 'już istnieje użytkownik z takim adresem email') if self.class.find_by_email(new_email)
       end
 
-      def password_with_hash_creation=(pass)
-        @password = pass
+      def email_address_with_name
+        "#{self.name} <#{self.email}>"
+      end
+
+      def new_email_address_with_name
+        "#{self.name} <#{self.new_email}>"
+      end
+
+      def password_with_hash_creation=(password)
+        self.password_without_hash_creation = password
         self.salt = self.class.random_string(10) if !self.salt?
-        self.hashed_password = self.class.encrypt(@password + self.salt)
+        self.hashed_password = self.class.encrypt(self.password + self.salt)
       end
 
       def register_me
         raise SimplyAuthenticate::Exceptions::NotRegistered if !self.save
         self.roles << Role.find_by_function('user')
-        return self.send_welcome_message, self.send_activation_code
-      end
-
-      def send_activation_code
-        Notifications.deliver_activation_code(self.email, self.activation_code)
+        self.send_welcome_message
+        self.send_activation_code
       end
 
       def send_welcome_message
-        Notifications.deliver_welcome_message(self.email, self.password)
+        Notifications.deliver_welcome_message(self)
       end
 
-      def send_forgot_password(new_pass)
-        Notifications.deliver_forgot_password(self.email, new_pass)
+      def send_activation_code
+        Notifications.deliver_activation_code(self)
       end
 
-      def send_new_password(new_pass)
-        Notifications.deliver_new_password(self.email, new_pass)
+      def send_forgot_password
+        Notifications.deliver_forgot_password(self)
+      end
+
+      def send_new_password
+        Notifications.deliver_new_password(self)
       end
 
       def send_new_email_activation_code
-        Notifications.deliver_new_email_activation_code(self.new_email, self.new_email_activation_code)
+        Notifications.deliver_new_email_activation_code(self)
       end
 
       def remember_me
@@ -149,7 +157,7 @@ module SimplyAuthenticate
       end
 
       def activated?
-        !self.activated_on.blank?
+        self.activated_on.present?
       end
 
       def blocked?
@@ -161,7 +169,7 @@ module SimplyAuthenticate
         self.class.authenticate(self.email, params[:old_password])
         # only then try to change the password
         raise SimplyAuthenticate::Exceptions::PasswordNotChanged if !self.update_attributes(:password => params[:password], :password_confirmation => params[:password_confirmation])
-        self.send_new_password(params[:password])
+        self.send_new_password
       end
 
       def update_profile(params)
@@ -173,7 +181,7 @@ module SimplyAuthenticate
         self.new_email = new_email
         self.make_new_email_activation_code
         raise SimplyAuthenticate::Exceptions::EmailNotChanged if !self.save
-        return self.send_new_email_activation_code
+        self.send_new_email_activation_code
       end
 
       def activate_new_email(new_email_activation_code)
@@ -184,7 +192,6 @@ module SimplyAuthenticate
         self.new_email_activation_code = nil
         raise SimplyAuthenticate::Exceptions::EmailNotChanged if !self.save
       end
-
 
       # Administration methods
 

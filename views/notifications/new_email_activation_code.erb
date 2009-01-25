@@ -1,0 +1,6 @@
+Aby zmienić swój adres email w serwisie <%= SimplyAuthenticate::Settings.notifications[:application] %> musisz potwierdzić jego zmianę poprzez kliknięcie w link poniżej:
+
+<%= new_email_activation_url(:host => SimplyAuthenticate::Settings.notifications[:host], :new_email_activation_code => @new_email_activation_code) %>
+
+
+Jeżeli otrzymałeś tę wiadomość przez przypadek, to zgłoś to na adres: <%= SimplyAuthenticate::Settings.notifications[:email] %>.

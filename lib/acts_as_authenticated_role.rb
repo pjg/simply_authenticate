@@ -12,9 +12,6 @@ module SimplyAuthenticate
         validates_uniqueness_of :function, :message => "istnieje już taka rola w systemie"
       end
     end
-
-    module InstanceMethods
-    end
   end
 
 end

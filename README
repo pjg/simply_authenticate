@@ -33,8 +33,14 @@ script/generate model role
 script/generate controller
 
 scrip/generate mailer Notifications (or something)
+i config/initializers/simply_authenticate.rb
+  SimplyAuthenticate::Settings.application = 'BlahBlah.pl'
+  SimplyAuthenticate::Settings.application_url = 'http://blah.pl'
+  SimplyAuthenticate::Settings.signature = 'Pozdrawiamy,\nBlah.pl'
 
-
+SimplyAuthenticate::Settings.notifications[:application] = 'TylkoZyczenia.pl'
+SimplyAuthenticate::Settings.notifications[:host] = "tylkozyczenia.pl"
+SimplyAuthenticate::Settings.notifications[:email] = 'poczta@tylkozyczenia.pl'
 
 config/routes.rb
   # User.send(:include, SimplyAuthenticate::UserExtension) if defined?(User)
