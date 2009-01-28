@@ -33,4 +33,4 @@ ActionController::Routing::RouteSet::Mapper.send :include, SimplyAuthenticate::R
 
 # Notifications mailer setup
 ActionMailer::Base.send :include, SimplyAuthenticate::ActsAsAuthenticatedMailer
-ActionMailer::Base.template_root = File.expand_path(File.dirname(__FILE__) + '/../views/')
+ActionMailer::Base.template_root = File.expand_path(File.dirname(__FILE__) + '/../app/views/')
