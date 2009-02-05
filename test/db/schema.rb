@@ -2,9 +2,10 @@ ActiveRecord::Schema.define(:version => 0) do
   create_table "users", :force => true do |t|
     t.string   "email",                     :limit => 120, :default => "",    :null => false
     t.string   "hashed_password",           :limit => 40,  :default => "",    :null => false
-    t.string   "name",                      :limit => 30,                     :null => false
-    t.string   "slug",                      :limit => 30,                     :null => false
+    t.string   "name",                      :limit => 30,  :default => ""
+    t.string   "slug",                      :limit => 30,  :default => ""
     t.string   "salt"
+    t.boolean  "is_activated",                             :default => false, :null => false
     t.string   "activation_code",           :limit => 40
     t.datetime "activated_on"
     t.string   "autologin_token",           :limit => 40
@@ -23,8 +24,7 @@ ActiveRecord::Schema.define(:version => 0) do
   end
 
   add_index "users", ["email"], :name => "email", :unique => true
-  add_index "users", ["name"], :name => "name", :unique => true
-  add_index "users", ["slug"], :name => "slug", :unique => true
+  add_index "users", ["slug"], :name => "slug"
   add_index "users", ["autologin_token"], :name => "autologin_token"
 
   create_table "roles", :force => true do |t|
@@ -38,4 +38,15 @@ ActiveRecord::Schema.define(:version => 0) do
     t.integer "role_id", :null => false
     t.integer "user_id", :null => false
   end 
+
+  # STUB simply_settings plugin table here so we can test the plugin like it was installed
+  create_table "options", :force => true do |t|
+    t.string   "name",        :limit => 30, :default => "", :null => false
+    t.string   "value",                     :default => "", :null => false
+    t.string   "description",               :default => "", :null => false
+    t.datetime "created_on"
+    t.datetime "updated_on"
+  end
+
+  add_index "options", ["name"], :name => "option_name", :unique => true
 end

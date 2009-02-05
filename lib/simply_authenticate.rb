@@ -22,11 +22,14 @@ ActionController::Base.send :include, SimplyAuthenticate::Helpers
 # Exceptions will be available in all controllers
 ActionController::Base.send :include, SimplyAuthenticate::Exceptions
 
-# Before filters (will be run for every action in every controller)
+# Before filters (will be run for every action in every controller) (:load_user must be THE FIRST filter)
 ActionController::Base.send :prepend_before_filter, :load_user
 
 # Filter password related parameters
 ActionController::Base.send :filter_parameter_logging, :password, :password_confirmation, :old_password
+
+# Templates for the UsersController
+ActionController::Base.view_paths.push File.expand_path(File.dirname(__FILE__) + '/../app/views/')
 
 # Named routes definitions
 ActionController::Routing::RouteSet::Mapper.send :include, SimplyAuthenticate::Routing::MapperExtensions

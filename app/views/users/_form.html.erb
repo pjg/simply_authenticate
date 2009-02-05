@@ -1,0 +1,31 @@
+<p><%= form.label :name, 'Imię/pseudonim:', :class => "blocking" %>
+<%= form.text_field :name, :class => "text", :size => 30 %></p>
+
+
+<%- if params[:action] == 'edit' -%>
+
+<p><%= form.label :slug, 'SLUG:', :class => "blocking" %>
+<%= form.text_field :slug, :class => "text", :size => 30 %></p>
+
+<p><%= form.label :email, 'Email:', :class => "blocking" %>
+<%= form.text_field :email, :class => "text", :size => 40 %></p>
+
+<p><%= form.label :password, 'Hasło:', :class => "blocking" %>
+<%= form.password_field :password, :class => "text", :size => 40 %></p>
+
+<%- if !@user.is_activated? -%>
+<p><%= form.check_box :is_activated, :class => "checkbox" %>
+<%= form.label :is_activated, 'aktywować użytkownika?', :class => "checkbox" %></p>
+<%- end -%>
+
+<p><%= form.check_box :is_blocked, :class => "checkbox" %>
+<%= form.label :is_blocked, 'użytkownik zablokowany?', :class => "checkbox" %></p>
+
+<h2>Uprawnienia:</h2>
+
+<%- @roles.each do |r| -%>
+<p><%= check_box "role", r.function, {:checked => @user.roles.include?(r), :class => 'checkbox'} %>
+<label class="checkbox" for="role_<%= r.function %>"><%= r.name.mb_chars.downcase %></label></p>
+<%- end -%>
+
+<%- end -%>

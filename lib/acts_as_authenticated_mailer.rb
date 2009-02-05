@@ -15,10 +15,12 @@ module SimplyAuthenticate
     end
 
     module InstanceMethods
+
+      # recipient here is a fully fledged User model
       def welcome_message(recipient)
         set_defaults(recipient)
         subject 'Rejestracja w serwisie ' + SimplyAuthenticate::Settings.notifications[:application] 
-        body :email => recipient.email, :password => recipient.password
+        body :email => recipient.email, :password => recipient.password, :activation_code => recipient.activation_code
       end
 
       def activation_code(recipient)

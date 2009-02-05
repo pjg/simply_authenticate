@@ -1,0 +1,13 @@
+<p>Aby zarejestrować się w serwise wystarczy podać poniżej swój adres email, na który następnie zostanie wysłana wiadomość z linkiem aktywującym konto.</p>
+
+<%- form_for @user, :url => register_path do |f| -%>
+
+<p><%= f.label :email, 'Email:', :class => "blocking" %>
+<%= f.text_field :email, :class => "text", :size => 30 %></p>
+
+<!-- render :partial => 'captcha' -->
+
+<p><%= f.submit "Rejestracja", :class => "button" %>
+<%= button_to_function "Anuluj", "window.location='/'",  {:class => "button cancel"} %></p>
+
+<%- end -%>

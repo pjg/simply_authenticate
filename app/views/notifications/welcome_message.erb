@@ -1,8 +1,17 @@
 Witamy w serwisie <%= SimplyAuthenticate::Settings.notifications[:application] %>!
 
+
+Aby dokończyć rejestrację musisz aktywować swoje konto poprzez kliknięcie w link poniżej:
+
+<%= activate_account_url(:host => SimplyAuthenticate::Settings.notifications[:host], :activation_code => @activation_code) %>
+
+
 Dane potrzebne do zalogowania się:
 
 Email: <%= @email %>
 Hasło: <%= @password %>
 
-Życzymy przyjemnego korzystania z naszego serwisu.
+Po aktywowaniu konta możliwa będzie zmiana hasła na łatwiejsze do zapamiętania. Życzymy przyjemnego korzystania z naszego serwisu!
+
+
+Jeżeli otrzymałeś tę wiadomość przez przypadek, to zgłoś to na adres: <%= SimplyAuthenticate::Settings.notifications[:email] %>.

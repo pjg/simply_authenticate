@@ -1,0 +1,10 @@
+<ul id="users">
+<%- @users.each do |u| -%>
+<li>
+[<strong><%= u.id %></strong>] <%= link_to u.name, user_show_path(u) %> <<%= link_to u.email, u.email %>>
+<% if !u.is_activated? %>[nieaktywowany]<% end %>
+<% if u.is_blocked? %>[zablokowany]<% end %>
+[<%= link_to 'edytuj', user_edit_path(u) %>]
+</li>
+<%- end -%>
+</ul>

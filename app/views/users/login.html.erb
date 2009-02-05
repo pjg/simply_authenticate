@@ -1,0 +1,25 @@
+<%- if request.post? -%>
+<%-   if @inactivated -%>
+<%= content_tag :p, 'Czy chcesz ponownie ' + link_to('otrzymać kod aktywacji', send_activation_code_path) + '?' %>
+<%-   else -%>
+<%= content_tag :p, 'Zapomniałeś hasła? Możesz ' + link_to('wygenerować nowe hasło.', forgot_password_path), :class => :margin %>
+<%-   end -%>
+<%- else -%>
+<%= content_tag :p, 'Nie masz jeszcze konta? ' + link_to('Zarejestruj się', register_path) + '.' if registration_allowed? %>
+<%- end -%>
+
+<%- form_for @user, :url => login_path do |f| %>
+
+<p><%= f.label :email, 'Email:', :class => "blocking" %>
+<%= f.text_field :email, :class => "text", :size => 40 %></p>
+
+<p><%= f.label :password, 'Hasło:', :class => "blocking" %>
+<%= f.password_field :password, :class => "text", :size => 40, :value => '' %></p>
+
+<p><%= check_box "remember", "me", :class => "checkbox" %>
+<%= label_tag :remember_me, 'Zapamiętaj mnie', :class => 'checkbox' %></p>
+
+<p><%= f.submit "Zaloguj", :class => "button" %>
+<%= button_to_function "Anuluj", "window.location='/'",  :class => "button cancel" %></p>
+
+<%- end -%>

@@ -51,6 +51,23 @@ config/routes.rb
   # User.send(:include, SimplyAuthenticate::UserExtension) if defined?(User)
   map.authentication_routes
 
+Templates
+
+The following controller actions have their own templates:
+
+If you want to use your own template you can just create it in the app/views/users/ directory and it should be picked up instead of the template from the plugin.
+
+
+Additional notes
+================
+
+If you have the simply_settings plugin installed you might want to add the following global settings, which will be respected by the simply_authenticate plugin:
+
+script/generate migration add_simply_authenticate_settings
+
+def up
+  Settings.new(:name => 'registration_allowed', :value => 0).save
+  Settings.new(:name => 'password_change_allowed', :value => 1).save
 
 
 
