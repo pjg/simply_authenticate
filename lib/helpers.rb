@@ -19,7 +19,7 @@ module SimplyAuthenticate
     def load_user
       # from session
       @current_user = User.find(session[:user_id]) if session[:user_id]
- 
+
       # from cookie
       # we store 'autologin_token' (hash of email, salt and expiration date) in user's cookie and in the database
       return unless cookies["autologin_token"] && !logged_in?
@@ -106,7 +106,7 @@ module SimplyAuthenticate
     def activate_account_login_and_redirect_to_root
       @title = 'Aktywacja konta'
       session[:user_id] = User.find_and_activate_account!(params[:activation_code]).id
-      flash[:notice] = "Twoje konto jest teraz aktywne. Zostałeś automatycznie zalogowany."
+      flash[:notice] = "Twoje konto jest teraz aktywne. Zostałeś automatycznie zalogowany"
       redirect_to root_path
     rescue SimplyAuthenticate::Exceptions::ArgumentError
       flash.now[:warning] = 'Brak kodu aktywacji'
@@ -146,8 +146,8 @@ module SimplyAuthenticate
         user.remember_me
         cookies[:autologin_token] = {:value => user.autologin_token, :expires => user.autologin_expires}
       end
-      user.update_attributes(:last_ip => user.current_ip, :current_ip => request.remote_ip, :last_logged_on => user.current_logged_on, :current_logged_on => Time.now)
-      redirect_to_stored  
+      user.update_last_logged_times(:login_count => user.login_count + 1,:last_ip => user.current_ip, :current_ip => request.remote_ip, :last_logged_on => user.current_logged_on, :current_logged_on => Time.now)
+      redirect_to_stored
     rescue SimplyAuthenticate::Exceptions::UnauthorizedWrongEmail
       flash.now[:warning] = 'Błędny email lub hasło'
     rescue SimplyAuthenticate::Exceptions::UnauthorizedWrongPassword
@@ -238,10 +238,10 @@ module SimplyAuthenticate
       flash[:notice] = 'Zostałeś wylogowany z systemu'
       redirect_to root_path
     end
-      
- 
+
+
     # Administrative methods
-    
+
     def list_users
       @title = 'Lista użytkowników'
       @users = User.find(:all, :order => :id)
@@ -267,7 +267,7 @@ module SimplyAuthenticate
       flash[:warning] = 'Nie odnaleziono użytkownika o takim id'
       redirect_to users_path
     rescue SimplyAuthenticate::Exceptions::UserNotUpdated
-      flash.now[:warning] = 'Wystąpił błąd podczas uaktualniania danych użytkownika'  
+      flash.now[:warning] = 'Wystąpił błąd podczas uaktualniania danych użytkownika'
     end
 
   end

@@ -4,7 +4,7 @@
 
 <p>Uprawnienia: <strong><%= @user.roles.collect {|r| r.name.mb_chars.downcase}.join("</strong>, <strong>") %></strong></p>
 
-<p>Ostatnie udane logowanie: 
+<p>Ostatnie udane logowanie:
 <% if @user.last_logged_on %>
 <strong><%= @user.last_logged_on.strftime("%Y-%m-%d %H:%M") %></strong> (z adresu IP: <code><%= @user.last_ip %></code>).
 <% else %>
@@ -22,6 +22,7 @@ brak danych.
 
 <p>Data rejestracji: <strong><%= @user.created_on.strftime("%Y-%m-%d %H:%M") %></strong>.</p>
 
+<p>Liczba logowań: <strong><%= @user.login_count %></strong></p>
 
 <%- if administrator? -%>
 

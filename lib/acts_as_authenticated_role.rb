@@ -5,7 +5,7 @@ module SimplyAuthenticate
       base.send :extend, ClassMethods
     end
 
-    module ClassMethods 
+    module ClassMethods
       def acts_as_authenticated_role
         has_and_belongs_to_many :users
 

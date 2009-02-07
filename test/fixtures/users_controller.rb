@@ -35,7 +35,7 @@ class UsersController < ApplicationController
 
   def forgot_password
     reset_password_and_redirect_to_login
-  end    
+  end
 
   def profile
     show_or_edit_profile

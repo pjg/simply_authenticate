@@ -16,7 +16,7 @@ class ActsAsAuthenticatedMailerTest < Test::Unit::TestCase
     u = User.new(:email => email)
     assert_nothing_raised {u.register!}
     assert_emails 1
- 
+
     email_sent = ActionMailer::Base.deliveries.first
     assert_not_nil email_sent
     password = email_sent.body[/Hasło: (\w+)$/, 1]

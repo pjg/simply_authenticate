@@ -157,7 +157,7 @@ class UsersControllerTest < ActionController::TestCase
     assert_nil session[:user_id]
     assert_template 'users/login'
     assert_tag :div, :child => /Twoje konto nie zostało jeszcze aktywowane/
-    
+
     # assume the activation key was lost and request it again
     get :send_activation_code
     assert_response :success
@@ -169,11 +169,17 @@ class UsersControllerTest < ActionController::TestCase
     assert_equal second_activation_code, activation_code
 
     # activate user (we should be automatically logged in)
+    @albert.reload
+    login_count = @albert.login_count
     get :activate_account, {:activation_code => activation_code}
-    assert_response :redirect
+    @albert.reload
     assert flash.has_key?(:notice)
-    assert session[:user_id]
-    assert User.find_by_activation_code(activation_code), User.find_by_id(session[:user_id])
+    assert_equal @albert.id, session[:user_id]
+    assert @albert.is_activated?
+    assert_not_nil @albert.activated_on
+    assert_equal User.find_by_activation_code(activation_code), User.find_by_id(session[:user_id])
+    assert_equal login_count + 1, @albert.login_count
+    assert_response :redirect
     assert_redirected_to root_path
 
     logout
@@ -247,7 +253,7 @@ class UsersControllerTest < ActionController::TestCase
     assert @response.has_session_object?(:user_id)
 
     logout
-    
+
     # login again but this time we should be redirected to the default action
     login_as(@bob)
     assert_redirected_to root_path
@@ -550,8 +556,10 @@ class UsersControllerTest < ActionController::TestCase
   private
 
   def login_as(user, options = {})
+    user.reload
     remember_me = options[:remember_me] && options[:remember_me] == true ? "1" : "0"
     password = options[:password] ? options[:password] : "test"
+    login_count = user.login_count
 
     # every user's password in fixtures is 'test'
     post :login, {:user => {:email => user.email, :password => password}, :remember => {:me => remember_me}}
@@ -559,6 +567,8 @@ class UsersControllerTest < ActionController::TestCase
     assert_equal user.id, session[:user_id]
     assert_equal @response.cookies['autologin_token'].present?, remember_me == "1" ? true : false
     assert logged_in?
+    user.reload
+    assert_equal login_count + 1, user.login_count
     assert_response :redirect
   end
 

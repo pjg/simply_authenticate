@@ -132,7 +132,7 @@ class ActsAsAuthenticatedTest < Test::Unit::TestCase
     assert !@bob.update_attributes(:password => '', :password_confirmation => '')
     assert @bob.errors.invalid?(:password)
 
-    # nil 
+    # nil
     assert !@bob.update_attributes(:password => nil, :password_confirmation => nil)
     assert @bob.errors.invalid?(:password)
 
@@ -141,7 +141,7 @@ class ActsAsAuthenticatedTest < Test::Unit::TestCase
     @bob.password_confirmation = 'bad_confirmation'
     assert !@bob.save
     assert @bob.errors.invalid?(:password)
-    
+
     # ok
     @bob.password = 'good_password'
     @bob.password_confirmation = 'good_password'
@@ -208,7 +208,7 @@ class ActsAsAuthenticatedTest < Test::Unit::TestCase
     # too long
     assert !@bob.update_attributes(:name => 'VeryVeryLongVeryVeryLongVeryVeryLongVeryVeryLongVeryVeryLongVeryVeryLongVeryVeryLongVeryVeryLongName')
     assert @bob.errors.invalid?(:name)
- 
+
     # non alphanumeric characters
     assert !@bob.update_attributes(:name => ';:!^%()')
     assert @bob.errors.invalid?('name')
@@ -251,12 +251,13 @@ class ActsAsAuthenticatedTest < Test::Unit::TestCase
   # PROTECTED ATTRIBUTES
 
   def test_protected_attributes_on_create
-    u = User.new(:id => 999999, :salt => 'I-want-to-set-my-salt', :name => 'Bad bob', :email => 'bab@bob.com', :password => 'new_password', :activation_code => '12345', :is_activated => true, :autologin_token => '12345', :autologin_expires => '2010-10-10 10:10:10')
+    u = User.new(:id => 999999, :salt => 'I-want-to-set-my-salt', :name => 'Bad bob', :email => 'bab@bob.com', :password => 'new_password', :activation_code => '12345', :is_activated => true, :is_blocked => true, :autologin_token => '12345', :autologin_expires => '2010-10-10 10:10:10')
     assert u.save
     assert_not_equal 999999, u.id
     assert_not_equal 'I-want-to-set-my-salt', u.salt
     assert_not_equal '12345', u.activation_code
     assert !u.is_activated?
+    assert !u.is_blocked?
     assert_not_equal '12345', u.autologin_token
     assert_nil u.autologin_expires
   end
@@ -310,9 +311,11 @@ class ActsAsAuthenticatedTest < Test::Unit::TestCase
 
     # activate user
     assert !@inactivated.is_activated?
+    login_count = @inactivated.login_count
     u = User.find_and_activate_account!(@inactivated.activation_code)
     assert_equal u, @inactivated
     assert u.is_activated?
+    assert_equal login_count + 1, u.login_count
   end
 
 
@@ -367,6 +370,22 @@ class ActsAsAuthenticatedTest < Test::Unit::TestCase
 
   def test_new_email_activation
     # tested in acts_as_authenticated_mailer_test.rb
+  end
+
+  def test_update_last_logged_times
+    slug = 'abcdefg'
+    login_count = 10
+    current_logged_on = Time.now
+
+    @bob.update_last_logged_times(:slug => slug, :login_count => login_count, :current_logged_on => current_logged_on)
+    @bob.reload
+
+    # slug should not be updated
+    assert_not_equal slug, @bob.slug
+
+    # rest should be updated
+    assert_equal login_count, @bob.login_count
+    assert_equal current_logged_on.iso8601, @bob.current_logged_on.iso8601
   end
 
   def test_administrative_update_user

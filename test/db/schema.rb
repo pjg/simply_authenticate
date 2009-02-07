@@ -13,6 +13,7 @@ ActiveRecord::Schema.define(:version => 0) do
     t.boolean  "is_blocked",                               :default => false, :null => false
     t.string   "new_email",                 :limit => 120
     t.string   "new_email_activation_code", :limit => 40
+    t.integer  "login_count",                              :default => 0,     :null => false
     t.string   "current_ip",                :limit => 20
     t.string   "last_ip",                   :limit => 20
     t.string   "last_failed_ip",            :limit => 20
@@ -37,7 +38,7 @@ ActiveRecord::Schema.define(:version => 0) do
   create_table "roles_users", :id => false, :force => true do |t|
     t.integer "role_id", :null => false
     t.integer "user_id", :null => false
-  end 
+  end
 
   # STUB simply_settings plugin table here so we can test the plugin like it was installed
   create_table "options", :force => true do |t|

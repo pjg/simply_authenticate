@@ -24,7 +24,7 @@ module SimplyAuthenticate
           validates_length_of :password, :in => 5..40, :too_short => "zbyt krótkie hasło (minimum 5 znaków)", :too_long => "zbyt długie hasło (max 40 znaków)", :on => :update, :allow_nil => true
           validates_confirmation_of :password, :message => "błędne potwierdzenie hasła", :on => :update, :allow_nil => true
 
-          # NAME (CREATE) user can have an empty .name but if its not empty, we should have it valid
+          # NAME (CREATE) user can have empty name but if its not empty, we should have it valid
           validates_length_of :name, :in => 3..30, :too_short => "zbyt krótkie imię/nazwisko (minimum 3 znaki)", :too_long => "zbyt długie imię/nazwisko (max 30 znaków)", :on => :create, :allow_blank => true
           validates_uniqueness_of :name, :message => "istnieje już użytkownik z takim samym imieniem/nazwiskiem", :on => :create, :allow_blank => true
           validates_format_of :name, :with => /[a-zA-Z0-9_\- ęóąśłżźćńĘÓĄŚŁŻŹĆŃ]+/, :message => "imię/nazwisko może zawierać tylko znaki alfanumeryczne", :on => :create, :allow_blank => true
@@ -36,7 +36,7 @@ module SimplyAuthenticate
 
           # SLUG (CREATE) can be empty
           validates_uniqueness_of :slug, :message => "istnieje już użytkownik z takim samym imieniem/nazwiskiem", :on => :create, :allow_blank => true
- 
+
           # SLUG (UPDATE) cannot collide
           validates_uniqueness_of :slug, :message => "istnieje już użytkownik z takim samym imieniem/nazwiskiem", :on => :update
 
@@ -55,7 +55,7 @@ module SimplyAuthenticate
 
 
           # access to attributes
-          attr_protected :id, :salt, :activation_code, :is_activated, :autologin_token, :autologin_expires
+          attr_protected :id, :salt, :activation_code, :is_activated, :is_blocked, :autologin_token, :autologin_expires
           attr_accessor :password
 
 
@@ -64,7 +64,7 @@ module SimplyAuthenticate
 
 
           # Class methods
-          
+
           def self.authenticate(email, pass)
             user = find_by_email(email)
             raise SimplyAuthenticate::Exceptions::UnauthorizedWrongEmail if user.nil?
@@ -88,9 +88,13 @@ module SimplyAuthenticate
             raise SimplyAuthenticate::Exceptions::BadActivationCode if !user
             raise SimplyAuthenticate::Exceptions::AlreadyActivated if user.is_activated?
             raise SimplyAuthenticate::Exceptions::UnauthorizedAccountBlocked if user.blocked?
-            # must use update_attribute because is_activated is a protected attribute and we cannot update it using update_attributes
+
+            # must use update_attribute because:
+            #   :is_activated is a protected attribute so we cannot update it using update_attributes
+            #   :name at this point is NIL so there will be validation errors when using update_attributes
             user.update_attribute(:is_activated, true)
-            user.update_attributes(:activated_on => Time.now.utc)
+            user.update_attribute(:login_count, (user.login_count + 1))
+            user.update_attribute(:activated_on, Time.now)
             user
           end
 
@@ -198,7 +202,7 @@ module SimplyAuthenticate
       def change_password(params)
         # first check if old password is valid (typing old password is required while changing the password)
         self.class.authenticate(self.email, params[:old_password])
-        
+
         # validations bug workaround (ie: validations work when in production mode but fail to work properly in functional tests)
         # you can comment out the next line and see if tests pass
         self.errors.add('password', 'nowe hasło nie może być puste') && raise(SimplyAuthenticate::Exceptions::PasswordNotChanged) if params[:password].blank?
@@ -220,17 +224,31 @@ module SimplyAuthenticate
         self.send_new_email_activation_code
       end
 
+      def update_last_logged_times(opts)
+        opts.each do |key, value|
+          # some security protection
+          next if ![:login_count, :last_ip, :current_ip, :last_logged_on, :current_logged_on].include?(key.to_sym)
+          # we must use update_attribute method because this can be executed before filling in the :name attribute (and :name cannot be empty on :update)
+          self.update_attribute(key, value)
+        end
+      end
+
+
       # Administration methods
 
       def update_user(params)
-        # bypass password update/validation if password is empty (in other words: no password change)
-        # params.delete('password') unless params['password'] && params['password'].any?
+        # :is_activated is a protected attribute and must be handled differently (we cannot use update_attributes)
+        if params['is_activated']
+          raise SimplyAuthenticate::Exceptions::UserNotUpdated if !self.update_attribute(:is_activated, params['is_activated'])
+          params.delete('is_activated')
+          params['activated_on'] = Time.now
+        end
 
-        # user activation (must be handled separately, as we cannot use update_attributes for that since is_activated is a protected attribute)
-        if params['is_activated'] && params['is_activated'] == '1'
-          raise SimplyAuthenticate::Exceptions::UserNotUpdated if !self.update_attribute(:is_activated, true)
-          params['activated_on'] = Time.now 
-        end   
+        # same goes for :is_blocked
+        if params['is_blocked']
+          raise SimplyAuthenticate::Exceptions::UserNotUpdated if !self.update_attribute(:is_blocked, params['is_blocked'])
+          params.delete('is_blocked')
+        end
 
         # normally update other attributes
         raise SimplyAuthenticate::Exceptions::UserNotUpdated if !self.update_attributes(params)
