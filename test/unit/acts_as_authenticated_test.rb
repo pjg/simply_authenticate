@@ -37,7 +37,7 @@ class ActsAsAuthenticatedTest < Test::Unit::TestCase
   # FIXTURES
 
   def test_fixtures_for_administrator_rights_in_actual_user
-    assert @administrator.roles.collect {|r| r.function == 'administrator'}.any?
+    assert @administrator.roles.collect {|r| r.slug == 'administrator'}.any?
   end
 
 
@@ -421,13 +421,13 @@ class ActsAsAuthenticatedTest < Test::Unit::TestCase
     # add user role
     @bob.update_roles({'user' => '1'})
     assert_equal 1, @bob.roles.size
-    assert @bob.roles.include?(Role.find_by_function('user'))
+    assert @bob.roles.include?(Role.find_by_slug('user'))
 
     # add user and administator role
     @bob.update_roles({'user' => '1', 'administrator' => '1'})
     assert_equal 2, @bob.roles.size
-    assert @bob.roles.include?(Role.find_by_function('user'))
-    assert @bob.roles.include?(Role.find_by_function('administrator'))
+    assert @bob.roles.include?(Role.find_by_slug('user'))
+    assert @bob.roles.include?(Role.find_by_slug('administrator'))
   end
 
   def test_remember_forget

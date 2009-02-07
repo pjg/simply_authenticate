@@ -3,21 +3,27 @@ require File.dirname(__FILE__) + '/../test_helper'
 class ActsAsAuthenticatedRoleTest < Test::Unit::TestCase
 
   def test_existing_role
-    assert_equal @user_role.function, 'user'
-    assert_equal @administrator_role.function, 'administrator'
+    assert_equal @user_role.slug, 'user'
+    assert_equal @administrator_role.slug, 'administrator'
   end
 
   def test_creating_invalid_role
-    role = Role.new(:function => 'user', :name => 'Użyszkodnik')
+    # bad name
+    role = Role.new(:name => @user_role.name, :slug => 'some-slug')
     assert !role.save
-    assert role.errors.invalid?(:function)
+    assert role.errors.invalid?(:name)
+
+    # bad slug
+    role = Role.new(:name => 'Nowa rola', :slug => @user_role.slug)
+    assert !role.save
+    assert role.errors.invalid?(:slug)
   end
 
   def test_creating_role
-    role = Role.new(:function => 'superuser', :name => 'Super szkodnik')
+    role = Role.new(:name => 'Super szkodnik', :slug => 'superuser')
     assert role.save
 
-    assert_equal role, Role.find_by_function('superuser')
+    assert_equal role, Role.find_by_slug('superuser')
     assert_equal role, Role.find_by_name('Super szkodnik')
   end
 

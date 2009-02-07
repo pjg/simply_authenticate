@@ -141,7 +141,7 @@ class UsersControllerTest < ActionController::TestCase
 
     # check proper role assignment
     @albert = User.find_by_email(email)
-    assert @albert.roles.include?(Role.find_by_function('user'))
+    assert @albert.roles.include?(Role.find_by_slug('user'))
 
     # extract password and activation code
     email_sent = ActionMailer::Base.deliveries.first
@@ -541,7 +541,7 @@ class UsersControllerTest < ActionController::TestCase
 
     # login as administrator
     login_as(@administrator)
-    assert User.find(session[:user_id]).roles.collect{|r| r.function == "administrator"}.any?
+    assert User.find(session[:user_id]).roles.collect{|r| r.slug == "administrator"}.any?
 
     # access allowed
     get :index

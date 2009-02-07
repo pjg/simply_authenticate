@@ -9,7 +9,8 @@ module SimplyAuthenticate
       def acts_as_authenticated_role
         has_and_belongs_to_many :users
 
-        validates_uniqueness_of :function, :message => "istnieje już taka rola w systemie"
+        validates_uniqueness_of :name, :message => "istnieje już taka rola w systemie"
+        validates_uniqueness_of :slug, :message => "istnieje już taka rola w systemie"
       end
     end
   end

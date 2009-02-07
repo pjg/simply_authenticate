@@ -24,16 +24,10 @@ ActiveRecord::Schema.define(:version => 0) do
     t.datetime "updated_on"
   end
 
-  add_index "users", ["email"], :name => "email", :unique => true
-  add_index "users", ["slug"], :name => "slug"
-  add_index "users", ["autologin_token"], :name => "autologin_token"
-
   create_table "roles", :force => true do |t|
-    t.string "function", :limit => 15, :default => "", :null => false
-    t.string "name",     :limit => 30, :default => "", :null => false
+    t.string "name", :limit => 30, :default => "", :null => false
+    t.string "slug", :limit => 30, :default => "", :null => false
   end
-
-  add_index "roles", ["function"], :name => "function", :unique => true
 
   create_table "roles_users", :id => false, :force => true do |t|
     t.integer "role_id", :null => false
@@ -49,5 +43,4 @@ ActiveRecord::Schema.define(:version => 0) do
     t.datetime "updated_on"
   end
 
-  add_index "options", ["name"], :name => "option_name", :unique => true
 end

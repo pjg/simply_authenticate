@@ -1,15 +1,15 @@
 user_role:
-  function: user
   name: Użytkownik
+  slug: user
 
 administrator_role:
-  function: administrator
   name: Administrator
+  slug: administrator
 
 editor_role:
-  function: editor
   name: Redaktor
+  slug: editor
 
 moderator_role:
-  function: moderator
   name: Moderator
+  slug: moderator

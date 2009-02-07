@@ -43,7 +43,7 @@ module SimplyAuthenticate
     SimplyAuthenticate::Settings.roles.each do |role|
       # HELPERS: editor? administrator? etc. for views/controllers
       define_method "#{role.to_s}?" do
-        logged_in? && @current_user && @current_user.roles.any? {|r| r.function == role.to_s}
+        logged_in? && @current_user && @current_user.roles.any? {|r| r.slug == role.to_s}
       end
 
       # FILTERS: editor_role_required administrator_role_required etc. for controllers

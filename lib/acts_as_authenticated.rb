@@ -159,7 +159,7 @@ module SimplyAuthenticate
       def register!
         self.password = self.password_confirmation = self.class.random_string(10)
         raise SimplyAuthenticate::Exceptions::NotRegistered if !self.save
-        self.roles << Role.find_by_function('user')
+        self.roles << Role.find_by_slug('user')
         self.send_welcome_message
       end
 
@@ -260,7 +260,7 @@ module SimplyAuthenticate
 
         # add new roles
         params.each do |role, value|
-          self.roles << Role.find_by_function(role) if value == "1"
+          self.roles << Role.find_by_slug(role) if value == "1"
         end
       end
 

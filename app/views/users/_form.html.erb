@@ -24,8 +24,8 @@
 <h2>Uprawnienia:</h2>
 
 <%- @roles.each do |r| -%>
-<p><%= check_box "role", r.function, {:checked => @user.roles.include?(r), :class => 'checkbox'} %>
-<label class="checkbox" for="role_<%= r.function %>"><%= r.name.mb_chars.downcase %></label></p>
+<p><%= check_box "role", r.slug, {:checked => @user.roles.include?(r), :class => 'checkbox'} %>
+<label class="checkbox" for="role_<%= r.slug %>"><%= r.name.mb_chars.downcase %></label></p>
 <%- end -%>
 
 <%- end -%>
