@@ -4,8 +4,8 @@ class UsersController < ApplicationController
   # clear all filters defined in application.rb
   skip_filter filter_chain
 
-  # skip_filter cleaned this up, so we need to add this here too (it must be THE FIRST filter)
-  prepend_before_filter :load_user
+  # skip_filter cleaned this up, so we need to add this here too (prepend because those HAVE TO BE the first filters)
+  prepend_before_filter :load_user, :valid_profile_required
 
   # certain filters for certain actions
   before_filter :login_required, :only => [:logout, :profile, :change_password, :change_email_address]
@@ -22,7 +22,7 @@ class UsersController < ApplicationController
   end
 
   def activate_account
-    activate_account_login_and_redirect_to_root
+    activate_account_login_and_redirect_to_profile
   end
 
   def send_activation_code

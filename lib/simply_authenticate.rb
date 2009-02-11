@@ -23,7 +23,7 @@ ActionController::Base.send :include, SimplyAuthenticate::Helpers
 ActionController::Base.send :include, SimplyAuthenticate::Exceptions
 
 # Before filters (will be run for every action in every controller) (:load_user must be THE FIRST filter)
-ActionController::Base.send :prepend_before_filter, :load_user
+ActionController::Base.send :prepend_before_filter, :load_user, :valid_profile_required
 
 # Filter password related parameters
 ActionController::Base.send :filter_parameter_logging, :password, :password_confirmation, :old_password

@@ -180,11 +180,38 @@ class UsersControllerTest < ActionController::TestCase
     assert_equal User.find_by_activation_code(activation_code), User.find_by_id(session[:user_id])
     assert_equal login_count + 1, @albert.login_count
     assert_response :redirect
-    assert_redirected_to root_path
+    assert_redirected_to profile_path
 
+    # try to fetch some other action to see that without filling in the profile we will be redirected to profile
+    get :register
+    assert_response :redirect
+    assert_redirected_to profile_path
+    assert flash.has_key?(:warning)
+
+    # accessing profile action directly should work without any redirects
+    get :profile
+    assert_response :success
+
+    # as should logout
     logout
 
+    # after login the first redirect is always to the root_path and from there we are redirected to profile_path
     login_as(@albert, :password => password)
+    assert_redirected_to root_path
+
+    # try to fetch some other action to see that without filling in the profile we will be redirected to profile
+    get :root
+    assert_response :redirect
+    assert_redirected_to profile_path
+    assert flash.has_key?(:warning)
+
+    # fill in profile
+    put :profile, {:user => {:name => "ThisIsMe"}}
+    assert_response :success
+
+    # see that going to root now should work without redirect
+    get :root
+    assert_response :success
   end
 
   def test_invalid_login
@@ -270,7 +297,7 @@ class UsersControllerTest < ActionController::TestCase
     # reset the session (equivalent of closing the browser)
     session[:user_id] = nil
 
-    # set cookies to the ones we got after logging in
+    # set cookies to the ones we got after logging in (cookies is a shortcut to @response.cookies)
     @request.cookies = cookies
 
     # fetch a page requiring being logged in
@@ -558,10 +585,9 @@ class UsersControllerTest < ActionController::TestCase
   def login_as(user, options = {})
     user.reload
     remember_me = options[:remember_me] && options[:remember_me] == true ? "1" : "0"
-    password = options[:password] ? options[:password] : "test"
+    password = options[:password] ? options[:password] : "test" # every user's password in fixtures is 'test'
     login_count = user.login_count
 
-    # every user's password in fixtures is 'test'
     post :login, {:user => {:email => user.email, :password => password}, :remember => {:me => remember_me}}
     assert @response.has_session_object?(:user_id)
     assert_equal user.id, session[:user_id]

@@ -24,9 +24,18 @@ module SimplyAuthenticate
       # we store 'autologin_token' (hash of email, salt and expiration date) in user's cookie and in the database
       return unless cookies["autologin_token"] && !logged_in?
       @current_user = User.find_by_autologin_token(cookies["autologin_token"])
-      if @current_user# && !@current_user.autologin_expires.nil? && Time.now < @current_user.autologin_expires
+      if @current_user && !@current_user.autologin_expires.nil? && Time.now < @current_user.autologin_expires
         session[:user_id] = @current_user.id
       end
+    end
+
+    # FILTER (run for every action; check whether the user has entered his name (required field), if not, redirect to profile)
+    def valid_profile_required
+      return if !logged_in? # do nothing if we are not logged
+      return if @current_user.name.present? # do nothing if the profile is already updated
+      return if params[:controller] == SimplyAuthenticate::Settings.controller_name and (params[:action] == 'profile' or params[:action] == 'logout') # do nothing if we are in the 'profile' or 'logout' action 
+      flash[:warning] = 'Zanim zaczniesz korzystać z serwisu musisz uzupełnić swój profil'
+      redirect_to profile_path # otherwise redirect to profile
     end
 
     # ACTION
@@ -103,11 +112,11 @@ module SimplyAuthenticate
     end
 
     # ACTIVATE
-    def activate_account_login_and_redirect_to_root
+    def activate_account_login_and_redirect_to_profile
       @title = 'Aktywacja konta'
       session[:user_id] = User.find_and_activate_account!(params[:activation_code]).id
-      flash[:notice] = "Twoje konto jest teraz aktywne. Zostałeś automatycznie zalogowany"
-      redirect_to root_path
+      flash[:notice] = 'Twoje konto jest teraz aktywne. Zostałeś automatycznie zalogowany. Aby dokończyć rejestrację w serwisie musisz uzupełnić swój profil'
+      redirect_to profile_path
     rescue SimplyAuthenticate::Exceptions::ArgumentError
       flash.now[:warning] = 'Brak kodu aktywacji'
     rescue SimplyAuthenticate::Exceptions::BadActivationCode
