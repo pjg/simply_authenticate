@@ -1,23 +1,25 @@
 <% if params[:action] == 'show' %><p>Imię i nazwisko/pseudonim: <strong><%= @user.name %></strong></p><% end %>
 
+<p>Płeć: <strong><%= 'Kobieta' if @user.gender == 'f'%><%= 'Mężczyzna' if @user.gender == 'm' %></strong></p>
+
 <p>Adres email: <%= obfuscate_email(@user.email) %></p>
 
 <p>Uprawnienia: <strong><%= @user.roles.collect {|r| r.name.mb_chars.downcase}.join("</strong>, <strong>") %></strong></p>
 
 <p>Ostatnie udane logowanie:
-<% if @user.last_logged_on %>
+<%- if @user.last_logged_on -%>
 <strong><%= @user.last_logged_on.strftime("%Y-%m-%d %H:%M") %></strong> (z adresu IP: <code><%= @user.last_ip %></code>).
-<% else %>
+<%- else -%>
 brak danych.
-<% end %>
+<%- end -%>
 </p>
 
 <p>Ostatnie nieudane logowanie:
-<% if @user.last_failed_logged_on %>
+<%- if @user.last_failed_logged_on -%>
 <strong><%= @user.last_failed_logged_on.strftime("%Y-%m-%d %H:%M") %></strong> (z adresu IP: <code><%= @user.last_failed_ip %></code>).
-<% else %>
+<%- else -%>
 brak danych.
-<% end %>
+<%- end -%>
 </p>
 
 <p>Data rejestracji: <strong><%= @user.created_on.strftime("%Y-%m-%d %H:%M") %></strong>.</p>

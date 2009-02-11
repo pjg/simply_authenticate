@@ -29,7 +29,7 @@ module SimplyAuthenticate
           validates_length_of :password, :in => 5..40, :too_short => "zbyt krótkie hasło (minimum 5 znaków)", :too_long => "zbyt długie hasło (max 40 znaków)", :on => :update, :allow_nil => true
           validates_confirmation_of :password, :message => "błędne potwierdzenie hasła", :on => :update, :allow_nil => true
 
-          # NAME (CREATE) user can have empty name but if its not empty, we should have it valid
+          # NAME (CREATE) user can have an empty name but if it's not empty, we should have it valid
           validates_length_of :name, :in => 3..30, :too_short => "zbyt krótkie imię/nazwisko (minimum 3 znaki)", :too_long => "zbyt długie imię/nazwisko (max 30 znaków)", :on => :create, :allow_blank => true
           validates_uniqueness_of :name, :message => "istnieje już użytkownik z takim samym imieniem/nazwiskiem", :on => :create, :allow_blank => true
           validates_format_of :name, :with => /^([a-zA-Z0-9_\- ęóąśłżźćńĘÓĄŚŁŻŹĆŃ]+)$/, :message => "imię/nazwisko może zawierać tylko znaki alfanumeryczne", :on => :create, :allow_blank => true
@@ -44,6 +44,9 @@ module SimplyAuthenticate
 
           # SLUG (UPDATE) cannot collide
           validates_uniqueness_of :slug, :message => "istnieje już użytkownik z takim samym imieniem/nazwiskiem (slug)", :on => :update, :allow_blank => true
+
+          # GENDER
+          # we have custom validate_on_update method to handle gender updates
 
 
           # ACTIVATION_CODE is created when adding user
@@ -141,6 +144,10 @@ module SimplyAuthenticate
         errors.add(:new_email, 'już istnieje użytkownik z takim adresem email') if self.class.find_by_email(new_email)
       end
 
+      def validate_on_update
+        errors.add(:gender_f, 'wymagane jest zadeklarowanie swojej płci') and errors.add(:gender_m, '') if self.gender.blank?
+      end
+
       def email_address_with_name
         "#{self.name} <#{self.email}>"
       end
@@ -213,7 +220,9 @@ module SimplyAuthenticate
       end
 
       def update_profile(params)
-        raise SimplyAuthenticate::Exceptions::ProfileNotUpdated if !self.update_attributes(:name => params[:name])
+        # only some parameters can be updated
+        params.reject! {|key, value| ![:name, :gender].include?(key.to_sym)}
+        raise SimplyAuthenticate::Exceptions::ProfileNotUpdated if !self.update_attributes(params)
       end
 
       def change_email_address(new_email)

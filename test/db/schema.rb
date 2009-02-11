@@ -4,6 +4,7 @@ ActiveRecord::Schema.define(:version => 0) do
     t.string   "hashed_password",           :limit => 40,  :default => "",    :null => false
     t.string   "name",                      :limit => 30,  :default => ""
     t.string   "slug",                      :limit => 30,  :default => ""
+    t.string   "gender",                    :limit => 1
     t.string   "salt"
     t.boolean  "is_activated",                             :default => false, :null => false
     t.string   "activation_code",           :limit => 40

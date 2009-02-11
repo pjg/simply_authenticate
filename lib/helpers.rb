@@ -29,10 +29,10 @@ module SimplyAuthenticate
       end
     end
 
-    # FILTER (run for every action; check whether the user has entered his name (required field), if not, redirect to profile)
+    # FILTER (run for every action; check whether the profile is filled in, if not, redirect to profile)
     def valid_profile_required
       return if !logged_in? # do nothing if we are not logged
-      return if @current_user.name.present? # do nothing if the profile is already updated
+      return if @current_user.name.present? and @current_user.gender.present? # do nothing if the profile is already filled in
       return if params[:controller] == SimplyAuthenticate::Settings.controller_name and (params[:action] == 'profile' or params[:action] == 'logout') # do nothing if we are in the 'profile' or 'logout' action 
       flash[:warning] = 'Zanim zaczniesz korzystać z serwisu musisz uzupełnić swój profil'
       redirect_to profile_path # otherwise redirect to profile
@@ -188,9 +188,9 @@ module SimplyAuthenticate
       @user = User.find(@current_user.id)
       return unless request.put?
       @user.update_profile(params[:user])
-      flash.now[:notice] = 'Twój profil został uaktualniony'
       # update ok, let @current_user share @user's data - we have to do this because there is no redirect after successful execution
       @current_user = @user
+      flash.now[:notice] = 'Twój profil został uaktualniony'
     rescue SimplyAuthenticate::Exceptions::ProfileNotUpdated
       flash.now[:warning] = 'Wystąpił błąd podczas uaktualniania profilu'
     end
