@@ -13,8 +13,13 @@ module SimplyAuthenticate
 
           # EMAIL (CREATE/UPDATE) user can be created having only a valid email (this email should be also valid when updating)
           validates_length_of :email, :in => 5..120, :too_short => "zbyt krótki adres email (minimum 5 znaków)", :too_long => "zbyt długi adres email (max 120 znaków)"
-          validates_format_of :email, :with => /^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i, :message => "błędny adres email"
+          validates_format_of :email, :with => /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i, :message => "błędny adres email"
           validates_uniqueness_of :email, :message => "istnieje już użytkownik z takim samym adresem email"
+
+          # NEW_EMAIL (UPDATE) normally this field should be empty/nil; active only when changing email
+          # we have another custom validation in change_email_address() for nil/empty value when doing an actual email change
+          validates_length_of :new_email, :in => 5..120, :too_short => "zbyt krótki adres email (minimum 5 znaków)", :too_long => "zbyt długi adres email (max 120 znaków)", :allow_blank => true
+          validates_format_of :new_email, :with => /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i, :message => "błędny adres email", :allow_blank => true
 
           # PASSWORD (CREATE) when using .register! method .salt .password .password_confirmation .hashed_password fields are populated
           validates_length_of :password, :in => 5..40, :too_short => "zbyt krótkie hasło (minimum 5 znaków)", :too_long => "zbyt długie hasło (max 40 znaków)", :on => :create
@@ -27,23 +32,18 @@ module SimplyAuthenticate
           # NAME (CREATE) user can have empty name but if its not empty, we should have it valid
           validates_length_of :name, :in => 3..30, :too_short => "zbyt krótkie imię/nazwisko (minimum 3 znaki)", :too_long => "zbyt długie imię/nazwisko (max 30 znaków)", :on => :create, :allow_blank => true
           validates_uniqueness_of :name, :message => "istnieje już użytkownik z takim samym imieniem/nazwiskiem", :on => :create, :allow_blank => true
-          validates_format_of :name, :with => /[a-zA-Z0-9_\- ęóąśłżźćńĘÓĄŚŁŻŹĆŃ]+/, :message => "imię/nazwisko może zawierać tylko znaki alfanumeryczne", :on => :create, :allow_blank => true
+          validates_format_of :name, :with => /^([a-zA-Z0-9_\- ęóąśłżźćńĘÓĄŚŁŻŹĆŃ]+)$/, :message => "imię/nazwisko może zawierać tylko znaki alfanumeryczne", :on => :create, :allow_blank => true
 
           # NAME (UPDATE) user cannot have an empty name
           validates_length_of :name, :in => 3..30, :too_short => "zbyt krótkie imię/nazwisko (minimum 3 znaki)", :too_long => "zbyt długie imię/nazwisko (max 30 znaków)", :on => :update
-          validates_uniqueness_of :name, :message => "istnieje już użytkownik z takim samym imieniem/nazwiskiem", :on => :update
-          validates_format_of :name, :with => /[a-zA-Z0-9_\- ęóąśłżźćńĘÓĄŚŁŻŹĆŃ]+/, :message => "imię/nazwisko może zawierać tylko znaki alfanumeryczne", :on => :update
+          validates_uniqueness_of :name, :message => "istnieje już użytkownik z takim samym imieniem/nazwiskiem", :on => :update, :allow_blank => true
+          validates_format_of :name, :with => /^([a-zA-Z0-9_\- ęóąśłżźćńĘÓĄŚŁŻŹĆŃ]+)$/, :message => "imię/nazwisko może zawierać tylko znaki alfanumeryczne", :on => :update
 
           # SLUG (CREATE) can be empty
-          validates_uniqueness_of :slug, :message => "istnieje już użytkownik z takim samym imieniem/nazwiskiem", :on => :create, :allow_blank => true
+          validates_uniqueness_of :slug, :message => "istnieje już użytkownik z takim samym imieniem/nazwiskiem (slug)", :on => :create, :allow_blank => true
 
           # SLUG (UPDATE) cannot collide
-          validates_uniqueness_of :slug, :message => "istnieje już użytkownik z takim samym imieniem/nazwiskiem", :on => :update
-
-          # NEW_EMAIL (UPDATE) normally this field should be empty/nil; active only when changing email
-          # we have another custom validation in change_email_address() for nil/empty value when doing an actual email change
-          validates_length_of :new_email, :in => 5..120, :too_short => "zbyt krótki adres email (minimum 5 znaków)", :too_long => "zbyt długi adres email (max 120 znaków)", :allow_blank => true
-          validates_format_of :new_email, :with => /^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i, :message => "błędny adres email", :allow_blank => true
+          validates_uniqueness_of :slug, :message => "istnieje już użytkownik z takim samym imieniem/nazwiskiem (slug)", :on => :update, :allow_blank => true
 
 
           # ACTIVATION_CODE is created when adding user

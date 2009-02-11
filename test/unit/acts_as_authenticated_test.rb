@@ -162,9 +162,15 @@ class ActsAsAuthenticatedTest < Test::Unit::TestCase
     assert !u.save
     assert u.errors.invalid?('name')
 
-    # non alphanumeric characters
+    # non alphanumeric characters (I)
     u = User.new(:email => 'larry@brown.com', :password => 'passwd')
     u.name = ';:!^%()'
+    assert !u.save
+    assert u.errors.invalid?('name')
+
+    # non alphanumeric characters (I)
+    u = User.new(:email => 'larry@brown.com', :password => 'passwd')
+    u.name = '12$'
     assert !u.save
     assert u.errors.invalid?('name')
 
@@ -236,7 +242,7 @@ class ActsAsAuthenticatedTest < Test::Unit::TestCase
     assert_equal 'just-my-name', u.slug
 
     # more complicated slug
-    u = User.new(:name => '!@ To$Łódź?żółć!pójdź[]do-mnie', :email => 'przyjdz@do.mnie.com', :password => 'passwd')
+    u = User.new(:name => 'To Łódź żółć pójdź do-mnie', :email => 'przyjdz@do.mnie.com', :password => 'passwd')
     assert u.save
     assert_equal 'to-lodz-zolc-pojdz-do-mnie', u.slug
   end
