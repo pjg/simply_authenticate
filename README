@@ -57,6 +57,21 @@ The following controller actions have their own templates:
 
 If you want to use your own template you can just create it in the app/views/users/ directory and it should be picked up instead of the template from the plugin.
 
+User profiles
+
+If you'd like to display some additional information in user's profile, create an empty partial:
+
+app/views/users/_detailed_profile.html.erb
+
+  <p>Added comments: <strong><%= @user.comments_count %></strong></p>
+
+
+
+
+
+
+
+
 
 Additional notes
 ================
