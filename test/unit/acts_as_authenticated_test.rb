@@ -443,9 +443,9 @@ class ActsAsAuthenticatedTest < Test::Unit::TestCase
     # remember
     @bob.remember_me
     assert @bob.autologin_token
-    assert_equal 2.months.from_now.year, @bob.autologin_expires.year
-    assert_equal 2.months.from_now.month, @bob.autologin_expires.month
-    assert_equal 2.months.from_now.day, @bob.autologin_expires.day
+    assert_equal SimplyAuthenticate::Settings.autologin_expires.to_i.days.from_now.year, @bob.autologin_expires.year
+    assert_equal SimplyAuthenticate::Settings.autologin_expires.to_i.days.from_now.month, @bob.autologin_expires.month
+    assert_equal SimplyAuthenticate::Settings.autologin_expires.to_i.days.from_now.day, @bob.autologin_expires.day
 
     # forget
     @bob.forget_me

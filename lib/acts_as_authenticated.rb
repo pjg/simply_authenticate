@@ -191,7 +191,7 @@ module SimplyAuthenticate
       end
 
       def remember_me
-        self.autologin_expires = 2.months.from_now
+        self.autologin_expires = SimplyAuthenticate::Settings.autologin_expires.to_i.days.from_now
         self.autologin_token = self.class.encrypt(self.salt + self.email + self.autologin_expires.to_s)
         self.save
       end

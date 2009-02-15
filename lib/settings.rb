@@ -40,7 +40,10 @@ module SimplyAuthenticate
     # Roles (assigned to users)
     @@roles = [:user, :administrator, :editor, :moderator]
 
-    mattr_accessor :controller_name, :path_names, :notifications, :roles
+    # Autologin expire time (in days)
+    @@autologin_expires = 30
+
+    mattr_accessor :controller_name, :path_names, :notifications, :roles, :autologin_expires
   end
 
 end
