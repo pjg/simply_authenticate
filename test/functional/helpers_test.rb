@@ -330,6 +330,12 @@ class UsersControllerTest < ActionController::TestCase
     password = $1 if Regexp.new("\n\n(\\w{10})\n\n") =~ ActionMailer::Base.deliveries.first.body
     assert_not_nil password
 
+    # old password no longer works
+    post :login, {:user => {:email => @bob.email, :password => 'test'}, :remember => {:me => '0'}}
+    assert_response :success
+    assert_nil session[:user_id]
+    assert_template 'users/login'
+
     # login with new password
     login_as(@bob, :password => password)
   end

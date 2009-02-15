@@ -8,8 +8,7 @@ require 'redgreen'
 # Load Rails
 require File.expand_path(File.join(ENV['RAILS_ROOT'], 'config/environment.rb'))
 
-
-# Setup database
+# Setup the database
 config = YAML::load(IO.read(File.dirname(__FILE__) + '/config/database.yml'))
 
 Dir.mkdir(File.dirname(__FILE__) + '/log') if !File.exists?(File.dirname(__FILE__) + '/log')
@@ -25,8 +24,13 @@ if db_adapter.nil?
   raise "Could not select the database adapter. Please install Sqlite3."
 end
 
+
 ActiveRecord::Base.establish_connection(config[db_adapter])
-load(File.dirname(__FILE__) + "/db/schema.rb")
+
+# We are loading the APPLICATION's database schema for testing
+# This way we can test that the integration with the application is ok
+# And we don't have to redefine the schema just for the plugin
+load(File.expand_path(File.join(ENV['RAILS_ROOT'], 'db/schema.rb')))
 
 
 # Load the plugin
@@ -43,18 +47,4 @@ class Test::Unit::TestCase
   self.use_transactional_fixtures = true
   self.use_instantiated_fixtures  = true
   fixtures :all
-end
-
-
-# Setup models
-class Role < ActiveRecord::Base
-  acts_as_authenticated_role
-end
-
-class User < ActiveRecord::Base
-  acts_as_authenticated
-end
-
-# STUB options (so we can run tests)
-class Option < ActiveRecord::Base
 end

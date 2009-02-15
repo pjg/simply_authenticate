@@ -69,7 +69,20 @@ app/views/users/_detailed_profile.html.erb
 
 
 
+TESTING
+=======
 
+If you'd like to run the tests included within this plugin you must have your application set up properly to work with this plugin. This means having: a user and role models (and corresponding databse tables) and the following plugins installed: simply_settings (link), ruby_extensions (http://github.com/pjg/ruby_extensions).
+
+If you are running in the errors like this one:
+
+SQLite3::SQLException: index name already exists
+
+you must have your indices named uniquely accross the database (sqlite3 limitation), like this:
+
+add_index :users, ['slug'], :name => 'users_slug', :unique => true
+
+notice the name prefix ('users_').
 
 
 
