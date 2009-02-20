@@ -347,7 +347,7 @@ class ActsAsAuthenticatedTest < Test::Unit::TestCase
 
   def test_profile_update
     # valid
-    assert_nil @bob.update_profile(:name => 'Bob no more')
+    assert_nothing_raised {@bob.update_profile(:name => 'Bob no more')}
     assert_equal 'Bob no more', @bob.name
 
     # invalid
