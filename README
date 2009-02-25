@@ -1,7 +1,7 @@
 SimplyAuthenticate
 ==================
 
-Rails plugin providing a relatively simple but quite complete authentication system with roles (many-to-many relationship).
+SimplyAuthenticate is a Rails plugin providing a relatively simple but complete role based authentication system.
 
 
 Requirements
@@ -9,16 +9,13 @@ Requirements
 
 Rails version 2.2.2+
 
-String class needs to have the .to_slug method defined. This can be provided by installing my ruby_extensions plugin:
+Gem dependencies:
+  redgreen (for testing) [OPTIONAL]
+  sqlite3-ruby (for testing)
+  unidecode (for a reliable .to_slug for user names)
 
-  git submodule add git://github.com/pjg/ruby_extensions.git vendor/plugins/ruby_extensions
-
-
-The following gems must be installed: unidecode (for reliable .to_slug), redgreen, sqlite3-ruby (for testing):
-
-  gem install unidecode
-  gem install redgreen
-  gem install sqlite3-ruby
+Other plugins dependencies:
+  ruby_extensions (.to_slug method for String class) (git://github.com/pjg/ruby_extensions.git)
 
 
 Installation
@@ -28,44 +25,164 @@ git clone git://github.com/pjg/simply_authenticate.git vendor/plugins/simply_aut
 
 
 script/generate model user
+  class User < ActiveRecord::Base
+    acts_as_authenticated
+  end
+
+db/migrate/xxxx_create_users.rb
+  create_table "users" do |t|
+    t.string   "email",                     :limit => 120, :default => "",    :null => false
+    t.string   "hashed_password",           :limit => 40,  :default => "",    :null => false
+    t.string   "name",                      :limit => 30,  :default => ""
+    t.string   "slug",                      :limit => 30,  :default => ""
+    t.string   "gender",                    :limit => 1
+    t.string   "salt",                      :limit => 10
+    t.string   "activation_code",           :limit => 40
+    t.datetime "activated_on"
+    t.boolean  "is_activated",                             :default => false, :null => false
+    t.boolean  "is_blocked",                               :default => false, :null => false
+    t.string   "autologin_token",           :limit => 40
+    t.datetime "autologin_expires"
+    t.string   "new_email",                 :limit => 120
+    t.string   "new_email_activation_code", :limit => 40
+    t.integer  "wishes_count",                             :default => 0,     :null => false
+    t.integer  "login_count",                              :default => 0,     :null => false
+    t.string   "current_ip",                :limit => 20
+    t.string   "last_ip",                   :limit => 20
+    t.string   "last_failed_ip",            :limit => 20
+    t.datetime "current_logged_on"
+    t.datetime "last_logged_on"
+    t.datetime "last_failed_logged_on"
+    t.datetime "created_on"
+    t.datetime "updated_on"
+  end
+
+  add_index "users", ["autologin_token"], :name => "users_autologin_token"
+  add_index "users", ["email"], :name => "users_email", :unique => true
+  add_index "users", ["slug"], :name => "users_slug"
+
+
 script/generate model role
-+ migrations...
+  class Role < ActiveRecord::Base
+    acts_as_authenticated_role
+  end
 
-script/generate controller
+db/migrate/xxxx_create_roles.rb
+  create_table "roles" do |t|
+    t.string "name", :limit => 30, :default => "", :null => false
+    t.string "slug", :limit => 30, :default => "", :null => false
+  end
 
-scrip/generate mailer Notifications (or something)
-i config/initializers/simply_authenticate.rb
-  SimplyAuthenticate::Settings.application = 'BlahBlah.pl'
-  SimplyAuthenticate::Settings.application_url = 'http://blah.pl'
-  SimplyAuthenticate::Settings.signature = 'Pozdrawiamy,\nBlah.pl'
+  add_index "roles", ["slug"], :name => "roles_slug", :unique => true
 
-SimplyAuthenticate::Settings.notifications[:application] = 'TylkoZyczenia.pl'
-SimplyAuthenticate::Settings.notifications[:host] = "tylkozyczenia.pl"
-SimplyAuthenticate::Settings.notifications[:email] = 'poczta@tylkozyczenia.pl'
 
-SimplyAuthenticate::Settings.roles = [:user, :administrator]
-# user is the default role (required), other roles may be left undefined
-# each role must have a corresponding database entry in the 'roles' table
+script/generate migration create_roles_users
+  create_table "roles_users", :id => false do |t|
+    t.integer "role_id", :null => false
+    t.integer "user_id", :null => false
+  end
+
+  execute "ALTER TABLE `roles_users` ADD PRIMARY KEY `role_id_user_id` (`role_id`, `user_id`)"
+
+
+script/generate migration add_default_roles
+  # Add roles you'd like your system to have. Administrator and user roles are required
+  Role.new(:slug => 'user', :name => 'Użytkownik').save
+  Role.new(:slug => 'administrator', :name => 'Administrator').save
+  Role.new(:slug => 'editor', :name => 'Redaktor').save
+  Role.new(:slug => 'moderator', :name => 'Moderator').save
+
+
+script/generate controller users
+  class UsersController < ApplicationController
+    # certain filters for certain actions
+    before_filter :login_required, :only => [:logout, :profile, :change_password, :change_email_address]
+    before_filter :registration_allowed, :only => [:register] # OPTIONAL
+    before_filter :password_change_allowed, :only => [:change_password] # OPTIONAL
+    before_filter :administrator_role_required, :only => [:index, :show, :edit]
+
+    def register
+      register_and_redirect_to_root
+    end
+
+    def activate_account
+      activate_account_login_and_redirect_to_profile
+    end
+
+    def send_activation_code
+      send_activation_code_and_redirect_to_root
+    end
+
+    def login
+      login_and_redirect_to_stored
+    end
+
+    def forgot_password
+      reset_password_and_redirect_to_login
+    end
+
+    def profile
+      show_or_edit_profile
+    end
+
+    def change_password
+      change_password_and_redirect_to_profile
+    end
+
+    def change_email_address
+      change_email_address_and_redirect_to_profile
+    end
+
+    def activate_new_email_address
+      activate_new_email_address_and_redirect_to_profile
+    end
+
+    def logout
+      logout_and_redirect_to_root
+    end
+
+    # Administrative methods
+
+    def index
+      list_users
+    end
+
+    def show
+      show_user
+    end
+
+    def edit
+      edit_user
+    end
+  end
+
+
+script/generate mailer Notifications
+  class Notifications < ActionMailer::Base
+    acts_as_authenticated_mailer
+  end
+
+
+vim config/initializers/simply_authenticate.rb
+  # you can see the things you can configure in the lib/settings.rb file
+  SimplyAuthenticate::Settings.notifications[:application] = 'MyApplication'
+  SimplyAuthenticate::Settings.notifications[:host] = 'myapplication.com'
+  SimplyAuthenticate::Settings.notifications[:email] = 'info@myapplication.com'
+  # those must be the same roles you've added in the migration (user and administrator roles are required)
+  SimplyAuthenticate::Settings.roles = [:user, :administrator, :editor]
+
 
 config/routes.rb
-  # User.send(:include, SimplyAuthenticate::UserExtension) if defined?(User)
-  map.authentication_routes
+  # Add a bunch of named routes from the SimplyAuthenticate plugin
+  map.simply_authenticate_routes
+
 
 Templates
+  The plugin comes with its own set of templates for actions defined in the UsersController (see above). If you want to use your own template you can just create it in the app/views/users/ directory and it should be picked up instead of the template from the plugin.
+  There is also one special partial: _detailed_profile.html.erb which is empty by default. You should create it if you'd like to display some additional info about the user in the profile. Like this:
 
-The following controller actions have their own templates:
-
-If you want to use your own template you can just create it in the app/views/users/ directory and it should be picked up instead of the template from the plugin.
-
-User profiles
-
-If you'd like to display some additional information in user's profile, create an empty partial:
-
-app/views/users/_detailed_profile.html.erb
-
-  <p>Added comments: <strong><%= @user.comments_count %></strong></p>
-
-
+  vim app/views/users/_detailed_profile.html.erb
+    <p>Added comments: <strong><%= @user.comments_count %></strong></p>
 
 
 
@@ -92,28 +209,25 @@ Additional notes
 If you have the simply_settings plugin installed you might want to add the following global settings, which will be respected by the simply_authenticate plugin:
 
 script/generate migration add_simply_authenticate_settings
+  Setting.new(:name => 'registration_allowed', :value => true).save
+  Setting.new(:name => 'password_change_allowed', :value => true).save
 
-def up
-  Settings.new(:name => 'registration_allowed', :value => 0).save
-  Settings.new(:name => 'password_change_allowed', :value => 1).save
+NOTE: not yet fully integrated
 
 
 
 FAQ
 ===
 
-Changing paths of named routes
-------------------------------
-vim config/initializers/simply_authenticate.rb
+Changing the paths of defined named routes
+------------------------------------------
 
-SimplyAuthenticate::Settings.route_names[:login_path] = 'login'
+config/initializers/simply_authenticate.rb
+  SimplyAuthenticate::Settings.route_names[:login_path] = 'login'
+  ...
 
 See: simply_authenticate/lib/settings.rb
 
-
-
-Examples
-========
 
 
 Copyright (c) 2009 Paweł Gościcki, released under the MIT license
