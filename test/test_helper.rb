@@ -3,7 +3,12 @@ ENV['RAILS_ROOT'] ||= File.dirname(__FILE__) + '/../../../..'
 
 require 'test/unit'
 require 'rubygems'
-require 'redgreen'
+
+# Optional gems
+begin
+  require 'redgreen'
+rescue LoadError
+end
 
 # Load Rails
 require File.expand_path(File.join(ENV['RAILS_ROOT'], 'config/environment.rb'))
@@ -21,7 +26,7 @@ db_adapter =
   end
 
 if db_adapter.nil?
-  raise "Could not select the database adapter. Please install Sqlite3."
+  raise "Could not select the database adapter. Please install Sqlite3 (gem install sqlite3-ruby)."
 end
 
 
@@ -41,6 +46,7 @@ require File.dirname(__FILE__) + '/../init.rb'
 require 'active_support/test_case'
 require 'active_record/fixtures'
 
+# But we are using the plugin's fixtures
 Test::Unit::TestCase.fixture_path = File.dirname(__FILE__) + "/fixtures"
 
 class Test::Unit::TestCase
