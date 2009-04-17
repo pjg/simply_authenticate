@@ -189,7 +189,13 @@ Templates
 TESTING
 =======
 
-If you'd like to run the tests included within this plugin you must have your application set up properly to work with this plugin. This means having: a user and role models (and corresponding databse tables) and the following plugins installed: simply_settings (link), ruby_extensions (http://github.com/pjg/ruby_extensions).
+If you'd like to run the tests included within this plugin you must have your application set up properly to work with this plugin. This means having: a user and role models (and corresponding databse tables) and the following plugins installed: simply_settings (link TBA), ruby_extensions (http://github.com/pjg/ruby_extensions).
+
+You also need to have sqlite3 installed:
+
+aptitude install sqlite3 libsqlite3-dev
+gem install sqlite3-ruby
+
 
 If you are running in the errors like this one:
 
