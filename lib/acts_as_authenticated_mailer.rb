@@ -52,7 +52,7 @@ module SimplyAuthenticate
 
       def set_defaults(recipient)
         recipients recipient.email_address_with_name
-        from SimplyAuthenticate::Settings.notifications[:from]
+        from SimplyAuthenticate::Settings.notifications[:application] + ' <' + SimplyAuthenticate::Settings.notifications[:email] + '>'
       end
     end
   end
