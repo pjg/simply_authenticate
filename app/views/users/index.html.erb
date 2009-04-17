@@ -3,9 +3,9 @@
 <li>
 [<strong><%= u.id %></strong>]
 <%= link_to u.name, user_show_path(u) if u.name.present? -%>
-<%= link_to '[nieaktywowany]', user_show_path(u) if !u.is_activated? -%>
+<%= ' <strong>[nieaktywowany]</strong> ' if !u.is_activated? -%>
  &lt;<%= mail_to u.email, u.email %>&gt;
-<%= '<strong>[zablokowany]</strong>' if u.is_blocked? -%>
+<%= '<strong>[zablokowany]</strong> ' if u.is_blocked? -%>
 [<%= link_to 'edytuj', user_edit_path(u) %>]
 </li>
 <%- end -%>
