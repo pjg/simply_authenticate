@@ -10,7 +10,7 @@
 <h1><%= @title.mb_chars.upcase %></h1>
 </div>
 
-<% for name in [:notice, :warning] %>
+<% for name in [:success, :error] %>
 <div><p class="<%= name %>"><%= flash[name] %></p></div>
 <% end %>
 
