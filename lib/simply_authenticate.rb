@@ -1,9 +1,9 @@
 require 'digest/sha1'
 
-require 'settings'
-require 'exceptions'
-require 'routing'
-require 'helpers'
+require 'simply_authenticate_settings'
+require 'simply_authenticate_exceptions'
+require 'simply_authenticate_routing'
+require 'simply_authenticate_helpers'
 
 require 'acts_as_authenticated'
 require 'acts_as_authenticated_role'
