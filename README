@@ -23,13 +23,12 @@ Installation
 
 git clone git://github.com/pjg/simply_authenticate.git vendor/plugins/simply_authenticate
 
-
 script/generate model user
   class User < ActiveRecord::Base
     acts_as_authenticated
   end
 
-db/migrate/xxxx_create_users.rb
+db/migrate/xxxxxxxxxxxxxx_create_users.rb
   create_table "users" do |t|
     t.string   "email",                     :limit => 120, :default => "",    :null => false
     t.string   "hashed_password",           :limit => 40,  :default => "",    :null => false
@@ -57,9 +56,9 @@ db/migrate/xxxx_create_users.rb
     t.datetime "updated_on"
   end
 
-  add_index "users", ["autologin_token"], :name => "users_autologin_token"
-  add_index "users", ["email"], :name => "users_email", :unique => true
-  add_index "users", ["slug"], :name => "users_slug"
+  add_index :users, ["autologin_token"], :name => "users_autologin_token"
+  add_index :users, ["email"], :name => "users_email", :unique => true
+  add_index :users, ["slug"], :name => "users_slug"
 
 
 script/generate model role
@@ -73,7 +72,7 @@ db/migrate/xxxx_create_roles.rb
     t.string "slug", :limit => 30, :default => "", :null => false
   end
 
-  add_index "roles", ["slug"], :name => "roles_slug", :unique => true
+  add_index :roles, ["slug"], :name => "roles_slug", :unique => true
 
 
 script/generate migration create_roles_users
@@ -163,13 +162,13 @@ script/generate mailer Notifications
   end
 
 
-vim config/initializers/simply_authenticate.rb
-  # you can see the things you can configure in the lib/settings.rb file
+config/initializers/simply_authenticate.rb
   SimplyAuthenticate::Settings.notifications[:application] = 'MyApplication'
   SimplyAuthenticate::Settings.notifications[:host] = 'myapplication.com'
   SimplyAuthenticate::Settings.notifications[:email] = 'info@myapplication.com'
-  # those must be the same roles you've added in the migration (user and administrator roles are required)
-  SimplyAuthenticate::Settings.roles = [:user, :administrator, :editor]
+  SimplyAuthenticate::Settings.roles = [:user, :administrator, :editor, :moderator]
+  # you can see all of the things you can configure in the lib/settings.rb file
+  # defined roles must be the same as the ones you've added in the migration (user and administrator roles are required)
 
 
 config/routes.rb
@@ -181,7 +180,7 @@ Templates
   The plugin comes with its own set of templates for actions defined in the UsersController (see above). If you want to use your own template you can just create it in the app/views/users/ directory and it should be picked up instead of the template from the plugin.
   There is also one special partial: _detailed_profile.html.erb which is empty by default. You should create it if you'd like to display some additional info about the user in the profile. Like this:
 
-  vim app/views/users/_detailed_profile.html.erb
+  app/views/users/_detailed_profile.html.erb
     <p>Added comments: <strong><%= @user.comments_count %></strong></p>
 
 

@@ -125,7 +125,7 @@ module SimplyAuthenticate
             Digest::SHA1.hexdigest(str)
           end
 
-          # generate a random password consisting of characters and digits
+          # generate a random string consisting of characters and digits
           def self.random_string(len)
             chars = ("a".."z").to_a + ("A".."Z").to_a + ("0".."9").to_a
             string = ""

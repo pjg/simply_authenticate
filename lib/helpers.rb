@@ -33,7 +33,7 @@ module SimplyAuthenticate
     def valid_profile_required
       return if !logged_in? # do nothing if we are not logged
       return if @current_user.name.present? and @current_user.gender.present? # do nothing if the profile is already filled in
-      return if params[:controller] == SimplyAuthenticate::Settings.controller_name and (params[:action] == 'profile' or params[:action] == 'logout') # do nothing if we are in the 'profile' or 'logout' action 
+      return if params[:controller] == SimplyAuthenticate::Settings.controller_name and (params[:action] == 'profile' or params[:action] == 'logout') # do nothing if we are in the 'profile' or 'logout' action
       flash[:warning] = 'Zanim zaczniesz korzystać z serwisu musisz uzupełnić swój profil'
       redirect_to profile_path # otherwise redirect to profile
     end
@@ -229,7 +229,7 @@ module SimplyAuthenticate
     def activate_new_email_address_and_redirect_to_profile
       @title = 'Aktywacja nowego adresu email'
       User.find_and_activate_new_email_address!(params[:new_email_activation_code])
-      flash[:notice] = "Twój adres email został zmieniony"
+      flash[:notice] = 'Twój adres email został zmieniony'
       redirect_to root_path
     rescue SimplyAuthenticate::Exceptions::ArgumentError
       flash.now[:warning] = 'Brak kodu aktywacji'
