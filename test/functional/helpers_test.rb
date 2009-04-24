@@ -340,6 +340,23 @@ class UsersControllerTest < ActionController::TestCase
     login_as(@bob, :password => password)
   end
 
+  def test_forgot_password_before_filling_in_the_profile
+    get :forgot_password
+    assert_response :success
+
+    post :forgot_password, :user => {:email => @genderless_activated.email}
+    assert_response :redirect
+    assert_redirected_to login_path
+    assert flash.has_key?(:success)
+
+    # parse new password
+    password = $1 if Regexp.new("\n\n(\\w{10})\n\n") =~ ActionMailer::Base.deliveries.first.body
+    assert_not_nil password
+
+    # login with new password
+    login_as(@genderless_activated, :password => password)
+  end
+
   def test_profile_fields_visibility
     # make sure SLUG field is not visible to normal users while viewing profile
     get :profile, {}, {:user_id => @bob}

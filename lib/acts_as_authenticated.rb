@@ -103,8 +103,9 @@ module SimplyAuthenticate
 
           def self.find_and_reset_password!(email)
             user = find_by_email!(email)
+            # we can have activated user with an empty profile (i.e. no gender), who wants to reset his password; so we bypass all validations here
             user.password = user.password_confirmation = random_string(10)
-            user.save
+            user.update_attribute(:hashed_password, encrypt(user.password + user.salt))
             user.send_forgot_password
             user
           end
