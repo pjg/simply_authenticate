@@ -40,7 +40,8 @@ module SimplyAuthenticate
 
     # ACTION
     def redirect_to_stored
-      if return_to = session[:return_to] then
+      return_to = session[:return_to]
+      if return_to.present? then
         session[:return_to] = nil
         redirect_to return_to
       else
