@@ -1,6 +1,8 @@
-<% if params[:action] == 'show' %><p>Imię i nazwisko/pseudonim: <strong><%= @user.name %></strong></p><% end %>
+<%- if params[:action] == 'show' -%>
+<p>Imię i nazwisko/pseudonim: <strong><%= @user.name %></strong></p>
 
 <p>Płeć: <strong><%= 'Kobieta' if @user.gender == 'f'%><%= 'Mężczyzna' if @user.gender == 'm' %></strong></p>
+<%- end -%>
 
 <p>Adres email: <%= obfuscate_email(@user.email) %></p>
 
