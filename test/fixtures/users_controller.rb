@@ -18,7 +18,7 @@ class UsersController < ApplicationController
   end
 
   def register
-    register_and_redirect_to_root
+    register_and_redirect_to_default
   end
 
   def activate_account
@@ -26,7 +26,7 @@ class UsersController < ApplicationController
   end
 
   def send_activation_code
-    send_activation_code_and_redirect_to_root
+    send_activation_code_and_redirect_to_default
   end
 
   def login
@@ -50,11 +50,11 @@ class UsersController < ApplicationController
   end
 
   def activate_new_email_address
-    activate_new_email_address_and_redirect_to_profile
+    activate_new_email_address_and_redirect_to_default
   end
 
   def logout
-    logout_and_redirect_to_root
+    logout_and_redirect_to_default
   end
 
   # Administrative methods

@@ -45,7 +45,7 @@ module SimplyAuthenticate
         session[:return_to] = nil
         redirect_to return_to
       else
-        redirect_to root_path
+        redirect_to SimplyAuthenticate::Settings.default_redirect_to
       end
     end
 
@@ -60,7 +60,7 @@ module SimplyAuthenticate
       define_method "#{role.to_s}_role_required" do
         return if send("#{role.to_s}?")
         flash[:error] = 'Brak wymaganych uprawnień'
-        redirect_to root_path
+        redirect_to SimplyAuthenticate::Settings.default_redirect_to
       end
     end
 
@@ -70,7 +70,7 @@ module SimplyAuthenticate
     def registration_allowed
       return if registration_allowed?
       flash[:error] = 'Rejestracja jest obecnie wyłączona'
-      redirect_to root_path
+      redirect_to SimplyAuthenticate::Settings.default_redirect_to
     end
 
     # FILTER
@@ -80,6 +80,7 @@ module SimplyAuthenticate
       redirect_to profile_path
     end
 
+    # TODO: move those two helpers into simply_settings plugin
     # HELPER
     def registration_allowed?
       # if there is the simply_settings plugin installed, check if registration is allowed, otherwise return true
@@ -98,14 +99,14 @@ module SimplyAuthenticate
     # Methods to use in the UsersController
 
     # REGISTER
-    def register_and_redirect_to_root
+    def register_and_redirect_to_default
       @title = 'Rejestracja'
       @user = User.new(params[:user])
       return unless request.post?
       # captcha_verification
       @user.register!
       flash[:success] = 'Rejestracja pomyślna. Konto nie jest jeszcze aktywne. Na podany adres email została wysłana wiadomość z instrukcją jak je aktywować'
-      redirect_to root_path
+      redirect_to SimplyAuthenticate::Settings.default_redirect_to
     rescue SimplyAuthenticate::Exceptions::NotRegistered
       flash.now[:error] = 'Błąd podczas rejestracji'
     rescue ApplicationController::InvalidCaptcha
@@ -131,13 +132,13 @@ module SimplyAuthenticate
 
     # SEND_ACTIVATION_CODE
     # Explicit activation code second delivery via email (normally it is sent in the welcome email)
-    def send_activation_code_and_redirect_to_root
+    def send_activation_code_and_redirect_to_default
       @title = "Prześlij kod aktywacji"
       @user = User.new
       return unless request.post?
       User.find_and_send_activation_code!(params[:user][:email])
       flash[:success] = 'Na podany adres email został wysłany kod aktywacji wraz z instrukcją jak aktywować konto'
-      redirect_to root_path
+      redirect_to SimplyAuthenticate::Settings.default_redirect_to
     rescue SimplyAuthenticate::Exceptions::UnauthorizedWrongEmail
       flash.now[:error] = 'Brak użytkownika o podanym adresie email'
     rescue SimplyAuthenticate::Exceptions::AlreadyActivated
@@ -227,11 +228,11 @@ module SimplyAuthenticate
 
     # ACTIVATE NEW EMAIL ADDRESS
     # activating new email address does not require being logged in; if we were logged in nothing changes after activating new email; if we were logged out, the same
-    def activate_new_email_address_and_redirect_to_profile
+    def activate_new_email_address_and_redirect_to_default
       @title = 'Aktywacja nowego adresu email'
       User.find_and_activate_new_email_address!(params[:new_email_activation_code])
       flash[:success] = 'Twój adres email został zmieniony'
-      redirect_to root_path
+      redirect_to SimplyAuthenticate::Settings.default_redirect_to
     rescue SimplyAuthenticate::Exceptions::ArgumentError
       flash.now[:error] = 'Brak kodu aktywacji'
     rescue ActiveRecord::RecordNotFound
@@ -241,12 +242,12 @@ module SimplyAuthenticate
     end
 
     # LOGOUT
-    def logout_and_redirect_to_root
+    def logout_and_redirect_to_default
       @current_user.forget_me
       reset_session
       cookies.delete :autologin_token
       flash[:success] = 'Zostałeś wylogowany z systemu'
-      redirect_to root_path
+      redirect_to SimplyAuthenticate::Settings.default_redirect_to
     end
 
 

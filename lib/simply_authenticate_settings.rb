@@ -43,7 +43,11 @@ module SimplyAuthenticate
     # Autologin expire time (in days)
     @@autologin_expires = 30
 
-    mattr_accessor :controller_name, :path_names, :notifications, :roles, :autologin_expires
+    # Default redirect_to destination (after registering, when no appropriate credentials, etc.)
+    # Unfotunately you cannot use 'root_path' and similar
+    @@default_redirect_to = '/'
+
+    mattr_accessor :controller_name, :path_names, :notifications, :roles, :autologin_expires, :default_redirect_to
   end
 
 end

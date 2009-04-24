@@ -101,11 +101,11 @@ script/generate controller users
     before_filter :administrator_role_required, :only => [:index, :show, :edit]
 
     def register
-      register_and_redirect_to_root
+      register_and_redirect_to_default
     end
 
     def activate_account
-      activate_account_login_and_redirect_to_profile
+      activate_account_login_and_redirect_to_default
     end
 
     def send_activation_code
@@ -133,11 +133,11 @@ script/generate controller users
     end
 
     def activate_new_email_address
-      activate_new_email_address_and_redirect_to_profile
+      activate_new_email_address_and_redirect_to_default
     end
 
     def logout
-      logout_and_redirect_to_root
+      logout_and_redirect_to_default
     end
 
     # Administrative methods
