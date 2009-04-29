@@ -281,6 +281,26 @@ class ActsAsAuthenticatedTest < Test::Unit::TestCase
   end
 
 
+  # DYNAMIC METHODS
+  def test_dynamic_role_methods
+    # user
+    assert @bob.is_user?
+    assert @bob.user?
+
+    # administrator
+    assert @administrator.is_administrator?
+    assert @administrator.administrator?
+    assert !@bob.is_administrator?
+    assert !@bob.administrator?
+
+    # editor
+    assert @editor.is_editor?
+    assert @editor.editor?
+    assert !@bob.is_editor?
+    assert !@bob.editor?
+  end
+
+
   # AUTHENTICATION
 
   def test_invalid_authentication

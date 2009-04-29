@@ -166,6 +166,19 @@ module SimplyAuthenticate
         self.hashed_password = self.class.encrypt(self.password + self.salt)
       end
 
+      # Dynamic methods definitions (for roles)
+      SimplyAuthenticate::Settings.roles.each do |role|
+        # is_editor? is_administrator? etc. for the User model
+        define_method "is_#{role.to_s}?" do
+          self.roles.any? {|r| r.slug == role.to_s}
+        end
+
+        # editor? administrator? short name aliases
+        define_method "#{role.to_s}?" do
+          send("is_#{role.to_s}?")
+        end
+      end
+
       def register!
         self.password = self.password_confirmation = self.class.random_string(10)
         raise SimplyAuthenticate::Exceptions::NotRegistered if !self.save
