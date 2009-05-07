@@ -100,7 +100,7 @@ class UsersControllerTest < ActionController::TestCase
     # fetch registration page
     get :register
     assert_response :success
-    assert_tag :h1, :child => /REJESTRACJA/
+    assert_select 'h1', :text => /REJESTRACJA/
     assert !flash.now[:success]
     assert !flash.now[:error]
 
@@ -156,7 +156,7 @@ class UsersControllerTest < ActionController::TestCase
     assert_response :success
     assert_nil session[:user_id]
     assert_template 'users/login'
-    assert_tag :div, :child => /Twoje konto nie zostało jeszcze aktywowane/
+    assert_select 'div', :text => /Twoje konto nie zostało jeszcze aktywowane/
 
     # assume the activation key was lost and request it again
     get :send_activation_code
@@ -218,7 +218,7 @@ class UsersControllerTest < ActionController::TestCase
     # fetch login page
     get :login
     assert_response :success
-    assert_tag :h1, :child => /LOGOWANIE/
+    assert_select 'h1', :text => /LOGOWANIE/
     assert_template 'users/login'
 
     # bad email
@@ -226,35 +226,41 @@ class UsersControllerTest < ActionController::TestCase
     assert_response :success
     assert_template 'users/login'
     assert !session[:user_id]
-    assert_tag :div, :child => /Błędny email lub hasło/
+    assert_select 'div', :text => /Błędny email lub hasło/
 
     # bad password
     post :login, {:user => {:email => @bob.email, :password => 'bad-password'}, :remember => {:me => '0'}}
     assert_response :success
     assert_template 'users/login'
     assert !session[:user_id]
-    assert_tag :div, :child => /Błędny email lub hasło/
+    assert_select 'div', :text => /Błędny email lub hasło/
 
     # not activated
     post :login, {:user => {:email => 'bill@bill.com', :password => 'test'}, :remember => {:me => '0'}}
     assert_response :success
     assert_template 'users/login'
     assert !session[:user_id]
-    assert_tag :div, :child => /Twoje konto nie zostało jeszcze aktywowane/
+    assert_select 'div', :text => /Twoje konto nie zostało jeszcze aktywowane/
 
     # account blocked
     post :login, {:user => {:email => 'kyrlie@kyrlie.com', :password => 'test'}, :remember => {:me => '0'}}
     assert_response :success
     assert_template 'users/login'
     assert !session[:user_id]
-    assert_tag :div, :child => /Twoje konto zostało zablokowane/
+    assert_select 'div', :text => /Twoje konto zostało zablokowane/
   end
 
   def test_login_logout
     # fetch login page
     get :login
     assert_response :success
-    assert_tag :h1, :child => /LOGOWANIE/
+    assert_select 'h1', :text => /LOGOWANIE/
+
+    # login/password fields
+    assert_select "p input[type=text]#user_email"
+    assert_select "p input[type=password]#user_password"
+
+    # not logged in
     assert !logged_in?
 
     # login
@@ -311,14 +317,14 @@ class UsersControllerTest < ActionController::TestCase
     # fetch forgot password page
     get :forgot_password
     assert_response :success
-    assert_tag :h1, :child => /GENEROWANIE NOWEGO HASŁA/
+    assert_select 'h1', :text => /GENEROWANIE NOWEGO HASŁA/
 
     # enter an email that doesn't exist
     post :forgot_password, :user => {:email => 'notauser@doesntexist.com'}
     assert_response :success
     assert !@response.has_session_object?(:user_id)
     assert_template 'users/forgot_password'
-    assert_tag :div, :child => /Odzyskanie hasła nie było możliwe/
+    assert_select 'div', :text => /Odzyskanie hasła nie było możliwe/
 
     # enter a valid email
     post :forgot_password, :user => {:email => @bob.email}
@@ -366,7 +372,7 @@ class UsersControllerTest < ActionController::TestCase
     # make sure SLUG field is visible to the administrator
     get :profile, {}, {:user_id => @administrator}
     assert_response :success
-    assert_tag :p, :child => /SLUG/
+    assert_select 'p', :text => /SLUG/
   end
 
   def test_profile_change
@@ -404,7 +410,7 @@ class UsersControllerTest < ActionController::TestCase
     # fetch password change page
     get :change_password
     assert_response :success
-    assert_tag :h1, :child => /ZMIANA HASŁA/
+    assert_select 'h1', :text => /ZMIANA HASŁA/
 
     # try to change the password
 
@@ -412,7 +418,7 @@ class UsersControllerTest < ActionController::TestCase
     put :change_password, {:user => {:old_password => 'blah', :password => 'newpass', :password_confirmation => 'newpass'}}
     assert_response :success
     assert @response.template_objects['user'].errors.invalid?(:old_password)
-    assert_tag :div, :child => /Zmiana hasła nie była możliwa/
+    assert_select 'div', :text => /Zmiana hasła nie była możliwa/
 
     # empty new password
     put :change_password, {:user => {:old_password => 'test', :password => '', :password_confirmation => ''}}
@@ -602,7 +608,7 @@ class UsersControllerTest < ActionController::TestCase
     # view our user and confirm his administrator role
     get :show, {:id => @administrator.id}
     assert_response :success
-    assert_tag :strong, :child => /administrator/
+    assert_select 'strong', :text => /administrator/
   end
 
   private

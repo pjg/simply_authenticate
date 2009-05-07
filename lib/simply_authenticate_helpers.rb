@@ -162,8 +162,8 @@ module SimplyAuthenticate
     rescue SimplyAuthenticate::Exceptions::UnauthorizedWrongEmail
       flash.now[:error] = 'Błędny email lub hasło'
     rescue SimplyAuthenticate::Exceptions::UnauthorizedWrongPassword
-      flash.now[:error] = 'Błędny email lub hasło'
       User.find_by_email(params[:user][:email]).update_attributes(:last_failed_ip => request.remote_ip, :last_failed_logged_on => Time.now)
+      flash.now[:error] = 'Błędny email lub hasło'
     rescue SimplyAuthenticate::Exceptions::UnauthorizedNotActivated
       @inactivated = true
       flash.now[:error] = 'Twoje konto nie zostało jeszcze aktywowane. Sprawdź swoją pocztę. Powinien znajdować się tam email z instrukcją aktywacji konta'
