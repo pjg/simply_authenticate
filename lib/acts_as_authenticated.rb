@@ -11,6 +11,14 @@ module SimplyAuthenticate
         class_eval do
           has_and_belongs_to_many :roles
 
+          # Named scopes
+          named_scope :ordered, :order => 'name'
+
+          # Dynamic named scopes
+          SimplyAuthenticate::Settings.roles.each do |role|
+            named_scope "#{role.to_s.pluralize}".to_sym, :joins => :roles, :conditions => "roles.slug='#{role.to_s}'"
+          end
+
           # EMAIL (CREATE/UPDATE) user can be created having only a valid email (this email should be also valid when updating)
           validates_length_of :email, :in => 5..120, :too_short => "zbyt krótki adres email (minimum 5 znaków)", :too_long => "zbyt długi adres email (max 120 znaków)"
           validates_format_of :email, :with => /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i, :message => "błędny adres email"

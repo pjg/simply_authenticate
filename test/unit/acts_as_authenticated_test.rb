@@ -41,6 +41,18 @@ class ActsAsAuthenticatedTest < Test::Unit::TestCase
   end
 
 
+  # NAMED SCOPES
+
+  def test_named_scopes
+    assert_equal User.ordered, User.all(:order => 'name')
+    assert_equal User.editors, User.all(:joins => :roles, :conditions => "roles.slug='editor'")
+
+    User.editors.each do |u|
+      assert u.editor?
+    end
+  end
+
+
   # VALIDATIONS
 
   def test_email_validations

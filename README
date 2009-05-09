@@ -184,6 +184,50 @@ Templates
     <p>Added comments: <strong><%= @user.comments_count %></strong></p>
 
 
+NAMED_SCOPES
+============
+
+The User model comes with some predefined named_scopes.
+
+User.ordered
+=> User.all(:order => 'name')
+
+User.editors
+=> User.all(:joins => :roles, :conditions => "roles.slug='editor'")
+# works for all roles defined
+
+
+MODEL METHODS
+=============
+
+The User model comes with some predefined dynamic methods:
+
+User.first.is_editor?
+User.first.editor?
+# works for all roles defined
+
+
+FILTERS
+=======
+
+There are some filters defined, which you can use in any controller, like this:
+
+before_filter :login_required
+
+before_filter :editor_role_required
+# works for all roles defined
+
+
+HELPERS
+=======
+
+There are some dynamic helpers available in the views:
+
+logged_in?
+
+editor?
+# works for all roles defined
+
 
 TESTING
 =======
