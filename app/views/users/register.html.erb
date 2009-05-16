@@ -8,6 +8,6 @@
 <!-- render :partial => 'captcha' -->
 
 <p><%= f.submit "Rejestracja", :class => "button" %>
-<%= button_to_function "Anuluj", "window.location='/'",  {:class => "button cancel"} %></p>
+<%= tag :input, :type => 'button', :value => 'Anuluj', :class => "button cancel" %></p>
 
 <%- end -%>

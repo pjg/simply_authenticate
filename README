@@ -184,6 +184,29 @@ Templates
     <p>Added comments: <strong><%= @user.comments_count %></strong></p>
 
 
+Javascript:
+
+  Add 'cancel' functionality to cancel buttons (jQuery code):
+    $("input.button.cancel").click(function() {
+      var classes = $(this).attr('class').split(' ')
+      for (var i = 0; i < classes.length; i++) {
+        if ((classes[i] != 'button') && (classes[i] != 'cancel')) {
+          // redirect to the custom action
+          window.location = '/' + classes[i]
+          return
+        }
+      }
+      // redirect to root (default)
+      window.location = '/'
+    })
+
+
+Javascript (optional):
+
+  Focus the email field for login/register/etc. forms (but only if the user hasn't started typing yet) (jQuery code):
+    $('input[value=""]#user_email').focus()
+
+
 NAMED_SCOPES
 ============
 

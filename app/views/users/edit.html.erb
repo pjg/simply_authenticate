@@ -3,6 +3,6 @@
 <%= render :partial => f %>
 
 <p><%= f.submit "Zapisz zmiany", :class => "button" %>
-<%= button_to_function "Anuluj", "window.location='#{users_path}'",  {:class => "button cancel"} %></p>
+<%= tag :input, :type => 'button', :value => 'Anuluj', :class => "button cancel uzytkownicy" %></p>
 
 <%- end -%>

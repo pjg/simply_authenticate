@@ -1,8 +1,9 @@
 <%- form_for @user, :url => change_email_address_path do |f| -%>
 
-<%= render :partial => 'change_email_address_form', :locals => {:f => f} %>
+<p><%= f.label :new_email, 'Nowy adres email:', :class => "blocking" %>
+<%= f.text_field :new_email, {:class => "text", :size => 30} %></p>
 
 <p><%= f.submit "Zmień adres email", :class => "button" %>
-<%= button_to_function "Anuluj", "window.location='/profil'",  {:class => "button cancel"} %></p>
+<%= tag :input, :type => 'button', :value => 'Anuluj', :class => "button cancel profil" %></p>
 
 <%- end -%>
