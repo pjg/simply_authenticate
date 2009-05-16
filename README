@@ -190,14 +190,17 @@ Javascript:
     $("input.button.cancel").click(function() {
       var classes = $(this).attr('class').split(' ')
       for (var i = 0; i < classes.length; i++) {
-        if ((classes[i] != 'button') && (classes[i] != 'cancel')) {
+        if ((classes[i] != 'button') && (classes[i] != 'cancel') && (classes[i] != 'root')) {
           // redirect to the custom action
-          window.location = '/' + classes[i]
+          window.location = '/' + classes[i].replace(/_/g, '/')
+          return
+        }
+        if (classes[i] == 'root') {
+          // redirect to root
+          window.location = '/'
           return
         }
       }
-      // redirect to root (default)
-      window.location = '/'
     })
 
 
