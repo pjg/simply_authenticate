@@ -167,6 +167,8 @@ config/initializers/simply_authenticate.rb
   SimplyAuthenticate::Settings.notifications[:host] = 'myapplication.com'
   SimplyAuthenticate::Settings.notifications[:email] = 'info@myapplication.com'
   SimplyAuthenticate::Settings.roles = [:user, :administrator, :editor, :moderator]
+  SimplyAuthenticate::Settings.legal_notice = 'Udostępniane dane osobowe są chronione zgodnie z Ustawą o ochronie danych osobowych i Ustawą o świadczeniu usług drogą elektroniczną. Administratorem bazy danych osobowych jest XXX z siedzibą w XXX przy ulicy XXX. Udostępniającemu przysługuje prawo do wglądu i zmiany swoich danych osobowych.'
+  SimplyAuthenticate::Settings.legal_requirements_message = 'Oświadczam, że zostałem poinformowany o przysługujących mi prawach i wyrażam zgodę na przechowywanie i przetwarzanie moich danych osobowych przez XXX.'
   # you can see all of the things you can configure in the lib/settings.rb file
   # defined roles must be the same as the ones you've added in the migration (user and administrator roles are required)
 

@@ -47,7 +47,11 @@ module SimplyAuthenticate
     # Unfotunately you cannot use 'root_path' and similar
     @@default_redirect_to = '/'
 
-    mattr_accessor :controller_name, :path_names, :notifications, :roles, :autologin_expires, :default_redirect_to
+    # Legal notice and legal requirements message (when registering)
+    @@legal_notice = ''
+    @@legal_requirements_message = ''
+
+    mattr_accessor :controller_name, :path_names, :notifications, :roles, :autologin_expires, :default_redirect_to, :legal_notice, :legal_requirements_message
   end
 
 end

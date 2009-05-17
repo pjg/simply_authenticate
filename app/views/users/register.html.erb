@@ -7,6 +7,13 @@
 
 <!-- render :partial => 'captcha' -->
 
+<%= content_tag :p, SimplyAuthenticate::Settings.legal_notice, :class => 'legal-notice' if SimplyAuthenticate::Settings.legal_notice.present? %>
+
+<%- if SimplyAuthenticate::Settings.legal_requirements_message.present? -%>
+<p class="legal-requirements"><%= check_box 'legal_requirements', 'accepted', :checked => params[:legal_requirements].present? && params[:legal_requirements][:accepted].present? ? params[:legal_requirements][:accepted] == '1' : true %>
+<%= label_tag 'legal_requirements_accepted', SimplyAuthenticate::Settings.legal_requirements_message, :class => 'checkbox' %></p>
+<%- end %>
+
 <p><%= f.submit "Rejestracja", :class => "button" %>
 <%= tag :input, :type => 'button', :value => 'Anuluj', :class => "button cancel root" %></p>
 

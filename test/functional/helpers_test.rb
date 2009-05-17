@@ -97,6 +97,10 @@ class UsersControllerTest < ActionController::TestCase
   end
 
   def test_invalid_registration
+    # set legal notice to empty (not required)
+    SimplyAuthenticate::Settings.legal_notice = ''
+    SimplyAuthenticate::Settings.legal_requirements_message = ''
+
     # fetch registration page
     get :register
     assert_response :success
@@ -127,13 +131,26 @@ class UsersControllerTest < ActionController::TestCase
     assert_response :success
     assert flash.now[:error]
     assert @response.template_objects['user'].errors.invalid?(:email)
+
+    # require confirmation of legal notice
+    SimplyAuthenticate::Settings.legal_notice = 'Required now'
+    SimplyAuthenticate::Settings.legal_requirements_message = 'Really required'
+
+    # legal notice not accepted
+    post :register, {:user => {:email => 'nowy@email.pl'}}
+    assert_response :success
+    assert flash.now[:error]
   end
 
   def test_registration
+    # require confirmation of legal notice
+    SimplyAuthenticate::Settings.legal_notice = 'Required now'
+    SimplyAuthenticate::Settings.legal_requirements_message = 'Really required'
+
     email = 'albert@albert.com'
 
     # register
-    post :register, {:user => {:email => email}}
+    post :register, {:user => {:email => email}, :legal_requirements => {:accepted => '1'}}
     assert flash.has_key?(:success)
     assert_response :redirect
     assert flash[:success]

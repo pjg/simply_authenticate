@@ -103,7 +103,14 @@ module SimplyAuthenticate
       @title = 'Rejestracja'
       @user = User.new(params[:user])
       return unless request.post?
+
+      # verify the legal requirements acceptance
+      if SimplyAuthenticate::Settings.legal_requirements_message.present?
+        flash.now[:error] = 'Rejestracja wymaga wyrażenia zgody na przetwarzanie danych osobowych' and return if params[:legal_requirements].blank? or params[:legal_requirements][:accepted].blank? or params[:legal_requirements][:accepted] != '1'
+      end
+
       # captcha_verification
+
       @user.register!
       flash[:success] = 'Rejestracja pomyślna. Konto nie jest jeszcze aktywne. Na podany adres email została wysłana wiadomość z instrukcją jak je aktywować'
       redirect_to SimplyAuthenticate::Settings.default_redirect_to
