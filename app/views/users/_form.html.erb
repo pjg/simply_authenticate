@@ -20,6 +20,7 @@
 
 <p><%= form.label :password, 'Hasło:', :class => "blocking" %>
 <%= form.password_field :password, :class => "text", :size => 40 %></p>
+<p class="help">Jeżeli chcesz zmienić hasło użytkownikowi, to wpisz je powyżej. W przeciwnym wypadku pozostaw to pole puste.</p>
 
 <%- if !@user.is_activated? -%>
 <p><%= form.check_box :is_activated, :class => "checkbox" %>
