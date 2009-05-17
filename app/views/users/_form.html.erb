@@ -1,6 +1,11 @@
 <p><%= form.label :name, 'Imię i nazwisko/pseudonim:', :class => "blocking" %>
 <%= form.text_field :name, :class => "text", :size => 30 %></p>
 
+<%- if params[:action] == 'edit' -%>
+<p><%= form.label :slug, 'SLUG:', :class => "blocking" %>
+<%= form.text_field :slug, :class => "text", :size => 30 %></p>
+<%- end -%>
+
 <% field_set_tag 'Płeć' do %>
 <%= form.radio_button :gender, 'f', :class => 'radio'  %>
 <%= form.label :gender_f, 'Kobieta' %>
@@ -9,9 +14,6 @@
 <%- end -%>
 
 <%- if params[:action] == 'edit' -%>
-
-<p><%= form.label :slug, 'SLUG:', :class => "blocking" %>
-<%= form.text_field :slug, :class => "text", :size => 30 %></p>
 
 <p><%= form.label :email, 'Email:', :class => "blocking" %>
 <%= form.text_field :email, :class => "text", :size => 40 %></p>
