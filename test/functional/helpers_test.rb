@@ -92,8 +92,6 @@ class UsersControllerTest < ActionController::TestCase
     # can access it now
     get :profile
     assert_response :success
-    assert flash.empty?
-    assert_template 'users/profile'
   end
 
   def test_invalid_registration
@@ -105,31 +103,31 @@ class UsersControllerTest < ActionController::TestCase
     get :register
     assert_response :success
     assert_select 'h1', :text => /REJESTRACJA/
-    assert !flash.now[:success]
-    assert !flash.now[:error]
+    assert !flash[:success]
+    assert !flash[:error]
 
     # empty email
     post :register, {:user => {:email => ''}}
     assert_response :success
-    assert flash.now[:error]
+    assert flash[:error]
     assert @response.template_objects['user'].errors.invalid?(:email)
 
     # too short email
     post :register, {:user => {:email => 'eee'}}
     assert_response :success
-    assert flash.now[:error]
+    assert flash[:error]
     assert @response.template_objects['user'].errors.invalid?(:email)
 
     # wrong email
     post :register, {:user => {:email => 'wrong@email'}}
     assert_response :success
-    assert flash.now[:error]
+    assert flash[:error]
     assert @response.template_objects['user'].errors.invalid?(:email)
 
     # wrong email (collision)
     post :register, {:user => {:email => @bob.email}}
     assert_response :success
-    assert flash.now[:error]
+    assert flash[:error]
     assert @response.template_objects['user'].errors.invalid?(:email)
 
     # require confirmation of legal notice
@@ -139,7 +137,7 @@ class UsersControllerTest < ActionController::TestCase
     # legal notice not accepted
     post :register, {:user => {:email => 'nowy@email.pl'}}
     assert_response :success
-    assert flash.now[:error]
+    assert flash[:error]
   end
 
   def test_registration
@@ -172,13 +170,11 @@ class UsersControllerTest < ActionController::TestCase
     post :login, {:user => {:email => email, :password => password}, :remember => {:me => '0'}}
     assert_response :success
     assert_nil session[:user_id]
-    assert_template 'users/login'
     assert_select 'div', :text => /Twoje konto nie zostało jeszcze aktywowane/
 
     # assume the activation key was lost and request it again
     get :send_activation_code
     assert_response :success
-    assert_template 'users/send_activation_code'
     post :send_activation_code, {:user => {:email => email}}
     second_email_sent = ActionMailer::Base.deliveries.second
     assert_not_nil second_email_sent
@@ -236,33 +232,28 @@ class UsersControllerTest < ActionController::TestCase
     get :login
     assert_response :success
     assert_select 'h1', :text => /LOGOWANIE/
-    assert_template 'users/login'
 
     # bad email
     post :login, {:user => {:email => 'blahblah@bob.com', :password => 'test'}, :remember => {:me => '0'}}
     assert_response :success
-    assert_template 'users/login'
     assert !session[:user_id]
     assert_select 'div', :text => /Błędny email lub hasło/
 
     # bad password
     post :login, {:user => {:email => @bob.email, :password => 'bad-password'}, :remember => {:me => '0'}}
     assert_response :success
-    assert_template 'users/login'
     assert !session[:user_id]
     assert_select 'div', :text => /Błędny email lub hasło/
 
     # not activated
     post :login, {:user => {:email => 'bill@bill.com', :password => 'test'}, :remember => {:me => '0'}}
     assert_response :success
-    assert_template 'users/login'
     assert !session[:user_id]
     assert_select 'div', :text => /Twoje konto nie zostało jeszcze aktywowane/
 
     # account blocked
     post :login, {:user => {:email => 'kyrlie@kyrlie.com', :password => 'test'}, :remember => {:me => '0'}}
     assert_response :success
-    assert_template 'users/login'
     assert !session[:user_id]
     assert_select 'div', :text => /Twoje konto zostało zablokowane/
   end
@@ -315,7 +306,7 @@ class UsersControllerTest < ActionController::TestCase
 
     # check whether the cookies were set
     assert_equal cookies.size, 1
-    assert_equal cookies['autologin_token'].value.first, User.find(@bob.id).autologin_token
+    assert_equal cookies['autologin_token'], User.find(@bob.id).autologin_token
 
     # reset the session (equivalent of closing the browser)
     session[:user_id] = nil
@@ -327,7 +318,7 @@ class UsersControllerTest < ActionController::TestCase
     get :profile
     assert_response :success
     assert_equal session[:user_id], @bob.id
-    assert_equal cookies['autologin_token'].value.first, User.find(@bob.id).autologin_token
+    assert_equal cookies['autologin_token'], User.find(@bob.id).autologin_token
   end
 
   def test_forgot_password
@@ -340,7 +331,7 @@ class UsersControllerTest < ActionController::TestCase
     post :forgot_password, :user => {:email => 'notauser@doesntexist.com'}
     assert_response :success
     assert !@response.has_session_object?(:user_id)
-    assert_template 'users/forgot_password'
+    assert_nil session[:user_id]
     assert_select 'div', :text => /Odzyskanie hasła nie było możliwe/
 
     # enter a valid email
@@ -357,7 +348,6 @@ class UsersControllerTest < ActionController::TestCase
     post :login, {:user => {:email => @bob.email, :password => 'test'}, :remember => {:me => '0'}}
     assert_response :success
     assert_nil session[:user_id]
-    assert_template 'users/login'
 
     # login with new password
     login_as(@bob, :password => password)
@@ -400,9 +390,7 @@ class UsersControllerTest < ActionController::TestCase
     # try changing name to a wrong name
     put :profile, {:user => {:name => 'yo'}}
     assert_response :success
-    @response.template_objects['user'].errors
     assert @response.template_objects['user'].errors.invalid?(:name)
-    assert_template 'users/profile'
 
     # our name is not changed
     get :profile
@@ -411,7 +399,6 @@ class UsersControllerTest < ActionController::TestCase
     # valid name and gender change
     put :profile, {:user => {:name => 'ThisIsNewMe', :gender => 'f'}}
     assert_response :success
-    assert_template 'users/profile'
 
     # our name and gender have been changed
     @bob.reload
@@ -461,7 +448,6 @@ class UsersControllerTest < ActionController::TestCase
     post :login, {:user => {:email => @bob.email, :password => 'test'}, :remember => {:me => '0'}}
     assert_response :success
     assert_nil session[:user_id]
-    assert_template 'users/login'
 
     # new password works
     login_as(@bob, :password => password)
@@ -651,7 +637,7 @@ class UsersControllerTest < ActionController::TestCase
     assert_response :redirect
     assert !@response.has_session_object?(:user_id)
     assert_nil session[:user_id]
-    assert_equal @response.cookies['autologin_token'], []
+    assert_nil cookies[:autologin_token]
     assert_redirected_to SimplyAuthenticate::Settings.default_redirect_to
   end
 

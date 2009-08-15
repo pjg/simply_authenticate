@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + '/../test_helper'
 
-class ExceptionsTest < Test::Unit::TestCase
+class ExceptionsTest < ActiveSupport::TestCase
 
   def test_exceptions
     exceptions = [

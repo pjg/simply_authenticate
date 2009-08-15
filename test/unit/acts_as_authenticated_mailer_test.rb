@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + '/../test_helper'
 
-class ActsAsAuthenticatedMailerTest < Test::Unit::TestCase
+class ActsAsAuthenticatedMailerTest < ActiveSupport::TestCase
 
   def setup
     super

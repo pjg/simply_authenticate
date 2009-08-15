@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + '/../test_helper'
 
-class ActsAsAuthenticatedTest < Test::Unit::TestCase
+class ActsAsAuthenticatedTest < ActiveSupport::TestCase
 
   # COMPLEMENTARY METHODS
 

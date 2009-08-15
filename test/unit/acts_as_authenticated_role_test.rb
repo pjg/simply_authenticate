@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + '/../test_helper'
 
-class ActsAsAuthenticatedRoleTest < Test::Unit::TestCase
+class ActsAsAuthenticatedRoleTest < ActiveSupport::TestCase
 
   def test_existing_role
     assert_equal @user_role.slug, 'user'

@@ -7,7 +7,7 @@ SimplyAuthenticate is a Rails plugin providing a relatively simple but complete 
 Requirements
 ============
 
-Rails version 2.2.2+
+Rails version 2.3+
 
 Gem dependencies:
   redgreen (for testing) [OPTIONAL]
