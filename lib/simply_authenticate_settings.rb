@@ -44,7 +44,7 @@ module SimplyAuthenticate
     @@autologin_expires = 30
 
     # Default redirect_to destination (after registering, when no appropriate credentials, etc.)
-    # Unfotunately you cannot use 'root_path' and similar
+    # Unfortunately you cannot use 'root_path' et al.
     @@default_redirect_to = '/'
 
     # Legal notice and legal requirements message (when registering)
