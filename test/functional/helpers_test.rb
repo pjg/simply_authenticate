@@ -21,7 +21,6 @@ class UsersControllerTest < ActionController::TestCase
 
     ActionController::Routing::Routes.draw do |map|
       map.root :controller => 'users', :action => 'root'
-      map.simply_authenticate_routes
     end
   end
 

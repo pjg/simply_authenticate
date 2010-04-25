@@ -174,11 +174,6 @@ config/initializers/simply_authenticate.rb
   # defined roles must be the same as the ones you've added in the migration (user and administrator roles are required)
 
 
-config/routes.rb
-  # Add a bunch of named routes from the SimplyAuthenticate plugin
-  map.simply_authenticate_routes
-
-
 Templates
   The plugin comes with its own set of templates for actions defined in the UsersController (see above). If you want to use your own template you can just create it in the app/views/users/ directory and it should be picked up instead of the template from the plugin.
   There is also one special partial: _detailed_profile.html.erb which is empty by default. You should create it if you'd like to display some additional info about the user in the profile. Like this:
@@ -301,7 +296,7 @@ config/initializers/simply_authenticate.rb
   SimplyAuthenticate::Settings.route_names[:login_path] = 'login'
   ...
 
-See: simply_authenticate/lib/settings.rb
+See: simply_authenticate/lib/simply_authenticate_settings.rb
 
 
 

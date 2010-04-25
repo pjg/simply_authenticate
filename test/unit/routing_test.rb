@@ -1,13 +1,6 @@
 require File.dirname(__FILE__) + '/../test_helper'
 
 class RoutingTest < ActiveSupport::TestCase
-
-  def setup
-    ActionController::Routing::Routes.draw do |map|
-      map.simply_authenticate_routes
-    end
-  end
-
   def test_authentication_routes
     controller = SimplyAuthenticate::Settings.controller_name
     path_names = SimplyAuthenticate::Settings.path_names
@@ -34,5 +27,4 @@ class RoutingTest < ActiveSupport::TestCase
     result = ActionController::Routing::Routes.recognize_path(path, :method => method)
     assert_equal options, result
   end
-
 end

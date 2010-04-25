@@ -2,7 +2,6 @@ require 'digest/sha1'
 
 require 'simply_authenticate_settings'
 require 'simply_authenticate_exceptions'
-require 'simply_authenticate_routing'
 require 'simply_authenticate_helpers'
 
 require 'acts_as_authenticated'
@@ -27,9 +26,6 @@ ActionController::Base.send :prepend_before_filter, :load_user, :valid_profile_r
 
 # Filter password related parameters
 ActionController::Base.send :filter_parameter_logging, :password, :password_confirmation, :old_password
-
-# Named routes definitions
-ActionController::Routing::RouteSet::Mapper.send :include, SimplyAuthenticate::Routing::MapperExtensions
 
 # Notifications mailer setup
 ActionMailer::Base.send :include, SimplyAuthenticate::ActsAsAuthenticatedMailer

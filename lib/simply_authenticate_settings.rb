@@ -1,5 +1,4 @@
 module SimplyAuthenticate
-
   # Settings for the SimplyAuthenticate plugin. You can override them on the global level
   # by putting the following into "config/initializers/simply_authenticate.rb":
   #
@@ -14,6 +13,7 @@ module SimplyAuthenticate
     # Paths used in routes definitions
     @@path_names = {:controller_prefix => 'uzytkownicy'}
     @@path_names.merge!(
+      # user actions
       :register_path => '/rejestracja',
       :activate_account_path => '/aktywacja/:activation_code',
       :send_activation_code_path => '/przeslij-kod-aktywacji',
@@ -24,7 +24,7 @@ module SimplyAuthenticate
       :change_email_address_path => '/zmiana-adresu-email',
       :activate_new_email_address_path => '/aktywacja-nowego-adresu-email/:new_email_activation_code',
       :logout_path => '/wyloguj',
-      # administrator's actions
+      # administrator actions
       :users_path => "/#{@@path_names[:controller_prefix]}",
       :user_edit_path => "/#{@@path_names[:controller_prefix]}/:id/edytuj",
       :user_show_path => "/#{@@path_names[:controller_prefix]}/:id"
@@ -53,5 +53,4 @@ module SimplyAuthenticate
 
     mattr_accessor :controller_name, :path_names, :notifications, :roles, :autologin_expires, :default_redirect_to, :legal_notice, :legal_requirements_message
   end
-
 end
