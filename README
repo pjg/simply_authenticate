@@ -22,7 +22,8 @@ Other plugins dependencies:
 Installation
 ============
 
-git clone git://github.com/pjg/simply_authenticate.git vendor/plugins/simply_authenticate
+git submodule add git://github.com/pjg/simply_authenticate.git vendor/plugins/simply_authenticate
+git commit -m "Add simply_authenticate plugin as a submodule"
 
 script/generate model user
   class User < ActiveRecord::Base
