@@ -28,9 +28,6 @@ ActionController::Base.send :prepend_before_filter, :load_user, :valid_profile_r
 # Filter password related parameters
 ActionController::Base.send :filter_parameter_logging, :password, :password_confirmation, :old_password
 
-# Templates for the UsersController
-ActionController::Base.view_paths.push File.expand_path(File.dirname(__FILE__) + '/../app/views/')
-
 # Named routes definitions
 ActionController::Routing::RouteSet::Mapper.send :include, SimplyAuthenticate::Routing::MapperExtensions
 
