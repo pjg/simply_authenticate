@@ -1,7 +1,0 @@
-registration_allowed:
-  name: 'registration_allowed'
-  value: '1'
-
-password_change_allowed:
-  name: 'password_change_allowed'
-  value: '1'

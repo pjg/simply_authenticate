@@ -2,6 +2,11 @@ module SimplyAuthenticate
 
   module Helpers
 
+    # include helpers from the simply_settings plugin (http://github.com/pjg/simply_settings)
+    # those helpers are like this: 'registration_allowed?' and 'password_change_allowed?'
+    # you are not obliged to use this plugin; you can define those two methods somewhere else
+    include SimplySettings::Helpers if defined?(SimplySettings::Helpers)
+
     # HELPER
     def logged_in?
       !session[:user_id].blank?
@@ -64,7 +69,7 @@ module SimplyAuthenticate
       end
     end
 
-    # SETTINGS (methods, which work with simply_settings plugin)
+    # SETTINGS (methods, which work with the simply_settings plugin)
 
     # FILTER
     def registration_allowed
@@ -78,21 +83,6 @@ module SimplyAuthenticate
       return if password_change_allowed?
       flash[:error] = 'Zmiana hasła jest w tym momencie niemożliwa'
       redirect_to profile_path
-    end
-
-    # TODO: move those two helpers into simply_settings plugin
-    # HELPER
-    def registration_allowed?
-      # if there is the simply_settings plugin installed, check if registration is allowed, otherwise return true
-      return true if @options.blank?
-      @options.select {|o| o.name == 'registration_allowed'}.first.value == '1'
-    end
-
-    # HELPER
-    def password_change_allowed?
-      # if there is the simply_settings plugin installed, check if registration is allowed, otherwise return true
-      return true if @options.blank?
-      @options.select {|o| o.name == 'password_change_allowed'}.first.value == '1'
     end
 
 

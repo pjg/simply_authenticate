@@ -15,7 +15,8 @@ Gem dependencies:
   unidecode (for a reliable .to_slug for user names)
 
 Other plugins dependencies:
-  ruby_extensions (.to_slug method for String class) (git://github.com/pjg/ruby_extensions.git)
+  ruby_extensions (.to_slug method for String class) (http://github.com/pjg/ruby_extensions)
+  simply_settings (to store application settings concerning registration) (http://github.com/pjg/simply_settings) [OPTIONAL]
 
 
 Installation
@@ -212,6 +213,17 @@ Javascript (optional):
     $('input[value=""]#user_email').focus()
 
 
+Install the simply_settings plugin:
+
+git clone http://github.com/pjg/simply_settings vendor/plugins/simply_settings
+
+and add settings for the simply_authenticate plugin:
+
+script/generate migration add_settings_for_the_simply_authenticate_plugin
+  Setting.new(:slug => 'registration_allowed', :value => '1', :name => 'Możliwość rejestracji użytkowników?').save
+  Setting.new(:slug => 'password_change_allowed', :value => '1', :name => 'Użytkownik może zmienić hasło?').save
+
+
 NAMED_SCOPES
 ============
 
@@ -260,7 +272,7 @@ editor?
 TESTING
 =======
 
-If you'd like to run the tests included within this plugin you must have your application set up properly to work with this plugin. This means having: a user and role models (and corresponding databse tables) and the following plugins installed: simply_settings (link TBA), ruby_extensions (http://github.com/pjg/ruby_extensions).
+If you'd like to run the tests included within this plugin you must have your application set up properly to work with this plugin. This means having: a user and role models (and corresponding databse tables) and the following plugins installed: simply_settings (http://github.com/pjg/simply_settings) and ruby_extensions (http://github.com/pjg/ruby_extensions).
 
 You also need to have sqlite3 installed:
 
@@ -279,20 +291,6 @@ add_index :users, ['slug'], :name => 'users_slug', :unique => true
 notice the name prefix ('users_').
 
 
-
-Additional notes
-================
-
-If you have the simply_settings plugin installed you might want to add the following global settings, which will be respected by the simply_authenticate plugin:
-
-script/generate migration add_simply_authenticate_settings
-  Setting.new(:name => 'registration_allowed', :value => true).save
-  Setting.new(:name => 'password_change_allowed', :value => true).save
-
-NOTE: not yet fully integrated
-
-
-
 FAQ
 ===
 
@@ -307,4 +305,4 @@ See: simply_authenticate/lib/settings.rb
 
 
 
-Copyright (c) 2009 Paweł Gościcki, released under the MIT license
+Copyright (c) 2009-2010 Paweł Gościcki, released under the MIT license

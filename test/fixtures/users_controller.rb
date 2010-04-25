@@ -1,7 +1,7 @@
 class UsersController < ApplicationController
   layout 'test'
 
-  # clear all filters defined in application.rb
+  # clear all filters defined in the application_controller.rb
   skip_filter filter_chain
 
   # skip_filter cleaned this up, so we need to add this here too (prepend because those HAVE TO BE the first filters)

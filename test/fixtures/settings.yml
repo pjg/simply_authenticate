@@ -1,0 +1,9 @@
+registration_allowed:
+  slug: 'registration_allowed'
+  name: 'Rejestracja dozwolona?'
+  value: '1'
+
+password_change_allowed:
+  slug: 'password_change_allowed'
+  name: 'Zmiana hasła możliwa?'
+  value: '1'
