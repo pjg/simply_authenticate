@@ -46,7 +46,6 @@ db/migrate/xxxxxxxxxxxxxx_create_users.rb
     t.datetime "autologin_expires"
     t.string   "new_email",                 :limit => 120
     t.string   "new_email_activation_code", :limit => 40
-    t.integer  "wishes_count",                             :default => 0,     :null => false
     t.integer  "login_count",                              :default => 0,     :null => false
     t.string   "current_ip",                :limit => 20
     t.string   "last_ip",                   :limit => 20
