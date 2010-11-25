@@ -31,35 +31,35 @@ script/generate model user
   end
 
 db/migrate/xxxxxxxxxxxxxx_create_users.rb
-  create_table "users" do |t|
-    t.string   "email",                     :limit => 120, :default => "",    :null => false
-    t.string   "hashed_password",           :limit => 40,  :default => "",    :null => false
-    t.string   "name",                      :limit => 30,  :default => ""
-    t.string   "slug",                      :limit => 30,  :default => ""
-    t.string   "gender",                    :limit => 1
-    t.string   "salt",                      :limit => 10
-    t.string   "activation_code",           :limit => 40
-    t.datetime "activated_on"
-    t.boolean  "is_activated",                             :default => false, :null => false
-    t.boolean  "is_blocked",                               :default => false, :null => false
-    t.string   "autologin_token",           :limit => 40
-    t.datetime "autologin_expires"
-    t.string   "new_email",                 :limit => 120
-    t.string   "new_email_activation_code", :limit => 40
-    t.integer  "login_count",                              :default => 0,     :null => false
-    t.string   "current_ip",                :limit => 20
-    t.string   "last_ip",                   :limit => 20
-    t.string   "last_failed_ip",            :limit => 20
-    t.datetime "current_logged_on"
-    t.datetime "last_logged_on"
-    t.datetime "last_failed_logged_on"
-    t.datetime "created_on"
-    t.datetime "updated_on"
+  create_table :users do |t|
+    t.string   :email,                     :limit => 120, :default => '',    :null => false
+    t.string   :hashed_password,           :limit => 40,  :default => '',    :null => false
+    t.string   :name,                      :limit => 30,  :default => ''
+    t.string   :slug,                      :limit => 30,  :default => ''
+    t.string   :gender,                    :limit => 1
+    t.string   :salt,                      :limit => 10
+    t.string   :activation_code,           :limit => 40
+    t.datetime :activated_on
+    t.boolean  :is_activated,                             :default => false, :null => false
+    t.boolean  :is_blocked,                               :default => false, :null => false
+    t.string   :autologin_token,           :limit => 40
+    t.datetime :autologin_expires
+    t.string   :new_email,                 :limit => 120
+    t.string   :new_email_activation_code, :limit => 40
+    t.integer  :login_count,                              :default => 0,     :null => false
+    t.string   :current_ip,                :limit => 20
+    t.string   :last_ip,                   :limit => 20
+    t.string   :last_failed_ip,            :limit => 20
+    t.datetime :current_logged_on
+    t.datetime :last_logged_on
+    t.datetime :last_failed_logged_on
+    t.datetime :created_on
+    t.datetime :updated_on
   end
 
-  add_index :users, ["autologin_token"], :name => "users_autologin_token"
-  add_index :users, ["email"], :name => "users_email", :unique => true
-  add_index :users, ["slug"], :name => "users_slug"
+  add_index :users, :autologin_token
+  add_index :users, :email, :unique => true
+  add_index :users, :slug
 
 
 script/generate model role
@@ -68,18 +68,18 @@ script/generate model role
   end
 
 db/migrate/xxxx_create_roles.rb
-  create_table "roles" do |t|
-    t.string "name", :limit => 30, :default => "", :null => false
-    t.string "slug", :limit => 30, :default => "", :null => false
+  create_table :roles do |t|
+    t.string :name, :limit => 30, :default => '', :null => false
+    t.string :slug, :limit => 30, :default => '', :null => false
   end
 
-  add_index :roles, ["slug"], :name => "roles_slug", :unique => true
+  add_index :roles, :slug, :unique => true
 
 
 script/generate migration create_roles_users
-  create_table "roles_users", :id => false do |t|
-    t.integer "role_id", :null => false
-    t.integer "user_id", :null => false
+  create_table :roles_users, :id => false do |t|
+    t.integer :role_id, :null => false
+    t.integer :user_id, :null => false
   end
 
   execute "ALTER TABLE `roles_users` ADD PRIMARY KEY `role_id_user_id` (`role_id`, `user_id`)"
@@ -87,11 +87,19 @@ script/generate migration create_roles_users
 
 script/generate migration add_default_roles
   # Add roles you'd like your system to have. Administrator and user roles are required
-  Role.new(:slug => 'user', :name => 'Użytkownik').save
-  Role.new(:slug => 'administrator', :name => 'Administrator').save
-  Role.new(:slug => 'editor', :name => 'Redaktor').save
-  Role.new(:slug => 'moderator', :name => 'Moderator').save
+  def self.up
+    Role.new(:slug => 'user', :name => 'Użytkownik').save
+    Role.new(:slug => 'administrator', :name => 'Administrator').save
+    Role.new(:slug => 'editor', :name => 'Redaktor').save
+    Role.new(:slug => 'moderator', :name => 'Moderator').save
+  end
 
+  def self.down
+    Role.find_by_slug('moderator').destroy
+    Role.find_by_slug('editor').destroy
+    Role.find_by_slug('administrator').destroy
+    Role.find_by_slug('user').destroy
+  end
 
 script/generate controller users
   class UsersController < ApplicationController
@@ -217,6 +225,7 @@ and add settings for the simply_authenticate plugin:
 script/generate migration add_settings_for_the_simply_authenticate_plugin
   Setting.new(:slug => 'registration_allowed', :value => '1', :name => 'Możliwość rejestracji użytkowników?').save
   Setting.new(:slug => 'password_change_allowed', :value => '1', :name => 'Użytkownik może zmienić hasło?').save
+  # '1' means true
 
 
 NAMED_SCOPES
