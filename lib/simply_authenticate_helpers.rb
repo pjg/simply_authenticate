@@ -73,21 +73,21 @@ module SimplyAuthenticate
 
     # FILTER
     def registration_allowed
-      return if registration_allowed?
+      return if !defined?(registration_allowed?) or registration_allowed?
       flash[:error] = 'Rejestracja jest obecnie wyłączona'
       redirect_to SimplyAuthenticate::Settings.default_redirect_to
     end
 
     # FILTER
     def password_change_allowed
-      return if password_change_allowed?
+      return if !defined?(password_change_allowed?) or password_change_allowed?
       flash[:error] = 'Zmiana hasła jest w tym momencie niemożliwa'
       redirect_to profile_path
     end
 
     # FILTER
     def password_reset_allowed
-      return if password_reset_allowed?
+      return if !defined?(password_reset_allowed?) or password_reset_allowed?
       flash[:error] = 'Reset hasła jest w tej chwili niemożliwy'
       redirect_to SimplyAuthenticate::Settings.default_redirect_to
     end

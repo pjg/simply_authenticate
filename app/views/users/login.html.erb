@@ -1,8 +1,8 @@
 <%- if request.post? -%>
 <%= content_tag(:p, 'Czy chcesz ponownie ' + link_to('otrzymać kod aktywacji', send_activation_code_path) + '?') if @inactivated %>
-<%= content_tag(:p, 'Zapomniałeś hasła? Możesz ' + link_to('wygenerować nowe hasło.', forgot_password_path), :class => :margin) if !@inactivated and password_reset_allowed? %>
+<%= content_tag(:p, 'Zapomniałeś hasła? Możesz ' + link_to('wygenerować nowe hasło.', forgot_password_path), :class => :margin) if !@inactivated and (!defined?(password_reset_allowed?) or password_reset_allowed?) %>
 <%- else -%>
-<%= content_tag :p, 'Nie masz jeszcze konta? ' + link_to('Zarejestruj się', register_path) + '.' if registration_allowed? %>
+<%= content_tag :p, 'Nie masz jeszcze konta? ' + link_to('Zarejestruj się', register_path) + '.' if !defined?(registration_allowed?) or registration_allowed? %>
 <%- end -%>
 
 <%- form_for @user, :url => login_path do |f| %>

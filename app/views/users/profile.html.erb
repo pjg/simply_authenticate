@@ -1,4 +1,4 @@
-<%- if password_change_allowed? -%>
+<%- if !defined?(password_change_allowed?) or password_change_allowed? -%>
 <p><%= link_to 'Zmiana hasła', change_password_path %></p>
 <%- end -%>
 
