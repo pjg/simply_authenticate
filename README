@@ -179,7 +179,6 @@ config/initializers/simply_authenticate.rb
   SimplyAuthenticate::Settings.legal_notice = 'Udostępniane dane osobowe są chronione zgodnie z Ustawą o ochronie danych osobowych i Ustawą o świadczeniu usług drogą elektroniczną. Administratorem bazy danych osobowych jest XXX z siedzibą w XXX przy ulicy XXX. Udostępniającemu przysługuje prawo do wglądu i zmiany swoich danych osobowych.'
   SimplyAuthenticate::Settings.legal_requirements_message = 'Oświadczam, że zostałem poinformowany o przysługujących mi prawach i wyrażam zgodę na przechowywanie i przetwarzanie moich danych osobowych przez XXX.'
   # you can see all of the things you can configure in the lib/settings.rb file
-  # defined roles must be the same as the ones you've added in the migration (user and administrator roles are required)
 
 
 Templates
@@ -245,6 +244,19 @@ And finally, add login/logout links to the application.html.erb:
 <%= link_to 'Rejestracja', register_path if registration_allowed? %>
 <%= link_to 'Logowanie »', login_path %>
 <% end %>
+
+
+Optional steps
+--------------
+
+It's best to have '/panel' action, where user will be redirected (by default) after logging in:
+
+routes.rb
+  map.panel '/panel', :controller => 'site', :action => 'panel'
+
+site_controller.rb:
+  def panel
+  end
 
 
 NAMED_SCOPES

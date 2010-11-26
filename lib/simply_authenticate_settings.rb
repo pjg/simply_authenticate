@@ -42,7 +42,7 @@ module SimplyAuthenticate
 
     # Default redirect_to destination (after registering, when no appropriate credentials, etc.)
     # Unfortunately you cannot use 'root_path' et al.
-    @@default_redirect_to = '/'
+    @@default_redirect_to = '/panel'
 
     # Legal notice and legal requirements message (when registering)
     @@legal_notice = ''
