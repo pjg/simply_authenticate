@@ -7,3 +7,8 @@ password_change_allowed:
   slug: 'password_change_allowed'
   name: 'Zmiana hasła możliwa?'
   value: '1'
+
+password_reset_allowed:
+  slug: 'password_reset_allowed'
+  name: 'Reset hasła możliwy?'
+  value: '1'

@@ -107,6 +107,7 @@ script/generate controller users
     before_filter :login_required, :only => [:logout, :profile, :change_password, :change_email_address]
     before_filter :registration_allowed, :only => [:register] # OPTIONAL
     before_filter :password_change_allowed, :only => [:change_password] # OPTIONAL
+    before_filter :password_reset_allowed, :only => [:forgot_password] # OPTIONAL
     before_filter :administrator_role_required, :only => [:index, :show, :edit]
 
     def register
@@ -225,12 +226,14 @@ and add settings for the simply_authenticate plugin ('1' means true/allowed):
 script/generate migration add_settings_for_the_simply_authenticate_plugin
   def self.up
     Setting.new(:slug => 'registration_allowed', :value => '1', :name => 'Możliwość rejestracji użytkowników?').save
-    Setting.new(:slug => 'password_change_allowed', :value => '1', :name => 'Użytkownik może zmienić hasło?').save
+    Setting.new(:slug => 'password_change_allowed', :value => '1', :name => 'Użytkownik może zmienić swoje hasło?').save
+    Setting.new(:slug => 'password_reset_allowed', :value => '1', :name => 'Użytkownik może zresetować swoje hasło?').save
   end
 
   def self.down
     Setting.find_by_slug('registration_allowed').destroy
     Setting.find_by_slug('password_change_allowed').destroy
+    Setting.find_by_slug('password_reset_allowed').destroy
   end
 
 And finally, add login/logout links to the application.html.erb:

@@ -11,6 +11,7 @@ class UsersController < ApplicationController
   before_filter :login_required, :only => [:logout, :profile, :change_password, :change_email_address]
   before_filter :registration_allowed, :only => [:register]
   before_filter :password_change_allowed, :only => [:change_password]
+  before_filter :password_reset_allowed, :only => [:forgot_password]
   before_filter :administrator_role_required, :only => [:index, :show, :edit]
 
   def root

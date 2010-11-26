@@ -3,8 +3,8 @@ module SimplyAuthenticate
   module Helpers
 
     # include helpers from the simply_settings plugin (http://github.com/pjg/simply_settings)
-    # those helpers are like this: 'registration_allowed?' and 'password_change_allowed?'
-    # you are not obliged to use this plugin; you can define those two methods somewhere else
+    # those helpers are like this: 'registration_allowed?', 'password_change_allowed?' and 'password_reset_allowed?'
+    # you are not obliged to use this plugin; you can define those methods somewhere else (if you want to use those filters, that is)
     include SimplySettings::Helpers if defined?(SimplySettings::Helpers)
 
     # HELPER
@@ -83,6 +83,13 @@ module SimplyAuthenticate
       return if password_change_allowed?
       flash[:error] = 'Zmiana hasła jest w tym momencie niemożliwa'
       redirect_to profile_path
+    end
+
+    # FILTER
+    def password_reset_allowed
+      return if password_reset_allowed?
+      flash[:error] = 'Reset hasła jest w tej chwili niemożliwy'
+      redirect_to SimplyAuthenticate::Settings.default_redirect_to
     end
 
 
