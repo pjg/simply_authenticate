@@ -4,6 +4,6 @@
 <%= f.text_field :new_email, {:class => "text", :size => 30} %></p>
 
 <p><%= f.submit "Zmień adres email", :class => "button" %>
-<%= tag :input, :type => 'button', :value => 'Anuluj', :class => "button cancel profil" %></p>
+<%= link_to 'Anuluj', profile_path, :class => 'cancel' %></p>
 
 <%- end -%>

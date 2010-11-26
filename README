@@ -178,42 +178,22 @@ config/initializers/simply_authenticate.rb
   SimplyAuthenticate::Settings.notifications[:email] = 'info@myapplication.com'
   SimplyAuthenticate::Settings.legal_notice = 'Udostępniane dane osobowe są chronione zgodnie z Ustawą o ochronie danych osobowych i Ustawą o świadczeniu usług drogą elektroniczną. Administratorem bazy danych osobowych jest XXX z siedzibą w XXX przy ulicy XXX. Udostępniającemu przysługuje prawo do wglądu i zmiany swoich danych osobowych.'
   SimplyAuthenticate::Settings.legal_requirements_message = 'Oświadczam, że zostałem poinformowany o przysługujących mi prawach i wyrażam zgodę na przechowywanie i przetwarzanie moich danych osobowych przez XXX.'
-  # you can see all of the things you can configure in the lib/settings.rb file
+  # you can see all of the things you can configure in the lib/simply_authenticate_settings.rb file
 
 
-Templates
-  The plugin comes with its own set of templates for actions defined in the UsersController (see above). If you want to use your own template you can just create it in the app/views/users/ directory and it should be picked up instead of the template from the plugin.
-  There is also one special partial: _detailed_profile.html.erb which is empty by default. You should create it if you'd like to display some additional info about the user in the profile. Like this:
+And finally, add login/logout links to the application.html.erb:
 
-  app/views/users/_detailed_profile.html.erb
-    <p>Added comments: <strong><%= @user.comments_count %></strong></p>
-
-
-Javascript:
-
-  Add 'cancel' functionality to cancel buttons (jQuery code):
-    $("input.button.cancel").click(function() {
-      var classes = $(this).attr('class').split(' ')
-      for (var i = 0; i < classes.length; i++) {
-        if ((classes[i] != 'button') && (classes[i] != 'cancel') && (classes[i] != 'root')) {
-          // redirect to the custom action
-          window.location = '/' + classes[i].replace(/_/g, '/')
-          return
-        }
-        if (classes[i] == 'root') {
-          // redirect to root
-          window.location = '/'
-          return
-        }
-      }
-    })
+<% if logged_in? %>
+<%= link_to 'Panel użytkownika', panel_path %>
+<%= link_to 'Wyloguj mnie »', logout_path %>
+<% else %>
+<%= link_to 'Rejestracja', register_path if registration_allowed? %>
+<%= link_to 'Logowanie »', login_path %>
+<% end %>
 
 
-Javascript (optional):
-
-  Focus the email field for login/register/etc. forms (but only if the user hasn't started typing yet) (jQuery code):
-    $('input[value=""]#user_email').focus()
-
+Optional steps
+--------------
 
 Install the simply_settings plugin:
 
@@ -235,21 +215,9 @@ script/generate migration add_settings_for_the_simply_authenticate_plugin
     Setting.find_by_slug('password_reset_allowed').destroy
   end
 
-And finally, add login/logout links to the application.html.erb:
+--
 
-<% if logged_in? %>
-<%= link_to 'Panel użytkownika', panel_path %>
-<%= link_to 'Wyloguj mnie »', logout_path %>
-<% else %>
-<%= link_to 'Rejestracja', register_path if registration_allowed? %>
-<%= link_to 'Logowanie »', login_path %>
-<% end %>
-
-
-Optional steps
---------------
-
-It's best to have '/panel' action, where user will be redirected (by default) after logging in:
+It's best to have '/panel' action, where user will be redirected (by default, using the SimplyAuthenticate::Settings.default_redirect_to config option) after logging in:
 
 routes.rb
   map.panel '/panel', :controller => 'site', :action => 'panel'
@@ -257,6 +225,33 @@ routes.rb
 site_controller.rb:
   def panel
   end
+
+--
+
+The plugin comes with its own set of templates for actions defined in the UsersController. If you want to use your own template you can just create it in the app/views/users/ directory of your application and it should be picked up instead of the template from the plugin.
+There is also one special partial: _detailed_profile.html.erb which is empty by default. You should create it if you'd like to display some additional info about the user in the profile. Like this:
+
+app/views/users/_detailed_profile.html.erb
+  <p>Added comments: <strong><%= @user.comments_count %></strong></p>
+
+--
+
+application.js (jQuery)
+
+// CANCEL buttons from hrefs
+$('a.cancel:contains("Anuluj")').each(function() {
+  var redirect_to = $(this).attr('href')
+
+  var button = $('<input type="button" class="cancel" value="Anuluj" />')
+  button.click(function() {
+    $(location).attr('href', redirect_to)
+  })
+
+  $(this).replaceWith(button)
+})
+
+// Focus the email field for the login/register form (but only if the user hasn't started typing yet)
+$('input[value=""]#user_email').focus()
 
 
 NAMED_SCOPES

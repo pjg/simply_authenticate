@@ -3,6 +3,6 @@
 <%= render :partial => f %>
 
 <p class="submit"><%= f.submit "Zapisz zmiany", :class => "button" %>
-<%= tag :input, :type => 'button', :value => 'Anuluj', :class => "button cancel uzytkownicy" %></p>
+<%= link_to 'Anuluj', users_path, :class => 'cancel' %></p>
 
 <%- end -%>
