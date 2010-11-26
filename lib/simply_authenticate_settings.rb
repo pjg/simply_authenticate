@@ -37,9 +37,6 @@ module SimplyAuthenticate
       :email => 'poczta@localhost'
     }
 
-    # Roles (assigned to users)
-    @@roles = [:user, :administrator, :editor, :moderator]
-
     # Autologin expire time (in days)
     @@autologin_expires = 30
 

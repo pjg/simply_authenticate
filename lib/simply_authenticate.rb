@@ -1,5 +1,7 @@
 require 'digest/sha1'
 
+require 'temporary_role_model'
+
 require 'simply_authenticate_settings'
 require 'simply_authenticate_exceptions'
 require 'simply_authenticate_helpers'

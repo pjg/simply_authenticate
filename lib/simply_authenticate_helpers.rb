@@ -55,15 +55,15 @@ module SimplyAuthenticate
     end
 
     # Dynamic methods definitions (for roles)
-    SimplyAuthenticate::Settings.roles.each do |role|
+    TemporaryRoleModel.all.each do |role|
       # HELPERS: editor? administrator? etc. for views/controllers
-      define_method "#{role.to_s}?" do
-        logged_in? && @current_user && @current_user.roles.any? {|r| r.slug == role.to_s}
+      define_method "#{role.slug}?" do
+        logged_in? && @current_user && @current_user.roles.any? {|r| r.slug == role.slug}
       end
 
       # FILTERS: editor_role_required administrator_role_required etc. for controllers
-      define_method "#{role.to_s}_role_required" do
-        return if send("#{role.to_s}?")
+      define_method "#{role.slug}_role_required" do
+        return if send("#{role.slug}?")
         flash[:error] = 'Brak wymaganych uprawnień'
         redirect_to SimplyAuthenticate::Settings.default_redirect_to
       end
