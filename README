@@ -220,12 +220,28 @@ Install the simply_settings plugin:
 git submodule add git://github.com/pjg/simply_settings.git vendor/plugins/simply_settings
 git commit -m "Add simply_settings plugin as a submodule"
 
-and add settings for the simply_authenticate plugin:
+and add settings for the simply_authenticate plugin ('1' means true/allowed):
 
 script/generate migration add_settings_for_the_simply_authenticate_plugin
-  Setting.new(:slug => 'registration_allowed', :value => '1', :name => 'Możliwość rejestracji użytkowników?').save
-  Setting.new(:slug => 'password_change_allowed', :value => '1', :name => 'Użytkownik może zmienić hasło?').save
-  # '1' means true
+  def self.up
+    Setting.new(:slug => 'registration_allowed', :value => '1', :name => 'Możliwość rejestracji użytkowników?').save
+    Setting.new(:slug => 'password_change_allowed', :value => '1', :name => 'Użytkownik może zmienić hasło?').save
+  end
+
+  def self.down
+    Setting.find_by_slug('registration_allowed').destroy
+    Setting.find_by_slug('password_change_allowed').destroy
+  end
+
+And finally, add login/logout links to the application.html.erb:
+
+<% if logged_in? %>
+<%= link_to 'Panel użytkownika', panel_path %>
+<%= link_to 'Wyloguj mnie »', logout_path %>
+<% else %>
+<%= link_to 'Rejestracja', register_path if registration_allowed? %>
+<%= link_to 'Logowanie »', login_path %>
+<% end %>
 
 
 NAMED_SCOPES
