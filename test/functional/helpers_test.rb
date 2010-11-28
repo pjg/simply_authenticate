@@ -102,31 +102,31 @@ class UsersControllerTest < ActionController::TestCase
     get :register
     assert_response :success
     assert_select 'h1', :text => /REJESTRACJA/
-    assert !flash[:success]
-    assert !flash[:error]
+    assert !flash.has_key?(:success)
+    assert !flash.has_key?(:error)
 
     # empty email
     post :register, {:user => {:email => ''}}
     assert_response :success
-    assert flash[:error]
+    assert flash.has_key?(:error)
     assert @response.template_objects['user'].errors.invalid?(:email)
 
     # too short email
     post :register, {:user => {:email => 'eee'}}
     assert_response :success
-    assert flash[:error]
+    assert flash.has_key?(:error)
     assert @response.template_objects['user'].errors.invalid?(:email)
 
     # wrong email
     post :register, {:user => {:email => 'wrong@email'}}
     assert_response :success
-    assert flash[:error]
+    assert flash.has_key?(:error)
     assert @response.template_objects['user'].errors.invalid?(:email)
 
     # wrong email (collision)
     post :register, {:user => {:email => @bob.email}}
     assert_response :success
-    assert flash[:error]
+    assert flash.has_key?(:error)
     assert @response.template_objects['user'].errors.invalid?(:email)
 
     # require confirmation of legal notice
@@ -136,7 +136,7 @@ class UsersControllerTest < ActionController::TestCase
     # legal notice not accepted
     post :register, {:user => {:email => 'nowy@email.pl'}}
     assert_response :success
-    assert flash[:error]
+    assert flash.has_key?(:error)
   end
 
   def test_registration
@@ -150,7 +150,7 @@ class UsersControllerTest < ActionController::TestCase
     post :register, {:user => {:email => email}, :legal_requirements => {:accepted => '1'}}
     assert flash.has_key?(:success)
     assert_response :redirect
-    assert flash[:success]
+    assert flash.has_key?(:success)
     assert_redirected_to SimplyAuthenticate::Settings.default_redirect_to
 
     # check proper role assignment
