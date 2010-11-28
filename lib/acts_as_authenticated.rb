@@ -15,8 +15,10 @@ module SimplyAuthenticate
           named_scope :ordered, :order => 'name'
 
           # Dynamic named scopes
-          TemporaryRoleModel.all.each do |role|
-            named_scope "#{role.slug.pluralize}".to_sym, :joins => :roles, :conditions => "roles.slug='#{role.slug}'"
+          if TemporaryRoleModel.table_exists?
+            TemporaryRoleModel.all.each do |role|
+              named_scope "#{role.slug.pluralize}".to_sym, :joins => :roles, :conditions => "roles.slug='#{role.slug}'"
+            end
           end
 
           # EMAIL (CREATE/UPDATE) user can be created having only a valid email (this email should be also valid when updating)
@@ -175,15 +177,17 @@ module SimplyAuthenticate
       end
 
       # Dynamic methods definitions (for roles)
-      TemporaryRoleModel.all.each do |role|
-        # is_editor? is_administrator? etc. for the User model
-        define_method "is_#{role.slug}?" do
-          self.roles.any? {|r| r.slug == role.slug}
-        end
+      if TemporaryRoleModel.table_exists?
+        TemporaryRoleModel.all.each do |role|
+          # is_editor? is_administrator? etc. for the User model
+          define_method "is_#{role.slug}?" do
+            self.roles.any? {|r| r.slug == role.slug}
+          end
 
-        # editor? administrator? short name aliases
-        define_method "#{role.slug}?" do
-          send("is_#{role.slug}?")
+          # editor? administrator? short name aliases
+          define_method "#{role.slug}?" do
+            send("is_#{role.slug}?")
+          end
         end
       end
 
