@@ -84,7 +84,7 @@ class UsersControllerTest < ActionController::TestCase
     get :profile
     assert_response :redirect
     assert_redirected_to login_path
-    assert flash.has_key?(:error)
+    assert flash.has_key?(:alert)
 
     login_as(@bob)
 
@@ -102,31 +102,31 @@ class UsersControllerTest < ActionController::TestCase
     get :register
     assert_response :success
     assert_select 'h1', :text => /REJESTRACJA/
-    assert !flash.has_key?(:success)
-    assert !flash.has_key?(:error)
+    assert !flash.has_key?(:notice)
+    assert !flash.has_key?(:alert)
 
     # empty email
     post :register, {:user => {:email => ''}}
     assert_response :success
-    assert flash.has_key?(:error)
+    assert flash.has_key?(:alert)
     assert @response.template_objects['user'].errors.invalid?(:email)
 
     # too short email
     post :register, {:user => {:email => 'eee'}}
     assert_response :success
-    assert flash.has_key?(:error)
+    assert flash.has_key?(:alert)
     assert @response.template_objects['user'].errors.invalid?(:email)
 
     # wrong email
     post :register, {:user => {:email => 'wrong@email'}}
     assert_response :success
-    assert flash.has_key?(:error)
+    assert flash.has_key?(:alert)
     assert @response.template_objects['user'].errors.invalid?(:email)
 
     # wrong email (collision)
     post :register, {:user => {:email => @bob.email}}
     assert_response :success
-    assert flash.has_key?(:error)
+    assert flash.has_key?(:alert)
     assert @response.template_objects['user'].errors.invalid?(:email)
 
     # require confirmation of legal notice
@@ -136,7 +136,7 @@ class UsersControllerTest < ActionController::TestCase
     # legal notice not accepted
     post :register, {:user => {:email => 'nowy@email.pl'}}
     assert_response :success
-    assert flash.has_key?(:error)
+    assert flash.has_key?(:alert)
   end
 
   def test_registration
@@ -148,9 +148,9 @@ class UsersControllerTest < ActionController::TestCase
 
     # register
     post :register, {:user => {:email => email}, :legal_requirements => {:accepted => '1'}}
-    assert flash.has_key?(:success)
+    assert flash.has_key?(:notice)
     assert_response :redirect
-    assert flash.has_key?(:success)
+    assert flash.has_key?(:notice)
     assert_redirected_to SimplyAuthenticate::Settings.default_redirect_to
 
     # check proper role assignment
@@ -185,7 +185,7 @@ class UsersControllerTest < ActionController::TestCase
     login_count = @albert.login_count
     get :activate_account, {:activation_code => activation_code}
     @albert.reload
-    assert flash.has_key?(:success)
+    assert flash.has_key?(:notice)
     assert_equal @albert.id, session[:user_id]
     assert @albert.is_activated?
     assert_not_nil @albert.activated_on
@@ -198,7 +198,7 @@ class UsersControllerTest < ActionController::TestCase
     get :register
     assert_response :redirect
     assert_redirected_to profile_path
-    assert flash.has_key?(:error)
+    assert flash.has_key?(:alert)
 
     # accessing profile action directly should work without any redirects
     get :profile
@@ -215,7 +215,7 @@ class UsersControllerTest < ActionController::TestCase
     get :root
     assert_response :redirect
     assert_redirected_to profile_path
-    assert flash.has_key?(:error)
+    assert flash.has_key?(:alert)
 
     # fill in the required profile fields
     put :profile, {:user => {:name => 'ThisIsMe', :gender => 'm'}}
@@ -280,7 +280,7 @@ class UsersControllerTest < ActionController::TestCase
   def test_return_to
     # can't access 'profile' without being logged in
     get :profile
-    assert flash.has_key?(:error)
+    assert flash.has_key?(:alert)
     assert_response :redirect
     assert_redirected_to login_path
     assert @response.has_session_object?(:return_to)
@@ -337,7 +337,7 @@ class UsersControllerTest < ActionController::TestCase
     post :forgot_password, :user => {:email => @bob.email}
     assert_response :redirect
     assert_redirected_to login_path
-    assert flash.has_key?(:success)
+    assert flash.has_key?(:notice)
 
     # parse new password
     password = $1 if Regexp.new("\n\n(\\w{10})\n\n") =~ ActionMailer::Base.deliveries.first.body
@@ -359,7 +359,7 @@ class UsersControllerTest < ActionController::TestCase
     post :forgot_password, :user => {:email => @genderless_activated.email}
     assert_response :redirect
     assert_redirected_to login_path
-    assert flash.has_key?(:success)
+    assert flash.has_key?(:notice)
 
     # parse new password
     password = $1 if Regexp.new("\n\n(\\w{10})\n\n") =~ ActionMailer::Base.deliveries.first.body
@@ -437,7 +437,7 @@ class UsersControllerTest < ActionController::TestCase
     password = 'newpass'
     put :change_password, {:user => {:old_password => 'test', :password => password, :password_confirmation => 'newpass'}}
     assert_response :redirect
-    assert flash.has_key?(:success)
+    assert flash.has_key?(:notice)
     assert @response.template_objects['user'].errors.empty?
     assert_redirected_to profile_path
 
@@ -489,7 +489,7 @@ class UsersControllerTest < ActionController::TestCase
     # change email
     put :change_email_address, {:user => {:new_email => email}}
     assert_response :redirect
-    assert flash.has_key?(:success)
+    assert flash.has_key?(:notice)
 
     # check that the current email has not yet been changed
     bob = User.find(@bob.id)
@@ -504,12 +504,12 @@ class UsersControllerTest < ActionController::TestCase
     # first try to activate without activation code
     get :activate_new_email_address
     assert_response :success
-    assert flash.has_key?(:error)
+    assert flash.has_key?(:alert)
 
     # try to activate with bad activation code
     get :activate_new_email_address, {:new_email_activation_code => 'asdf'}
     assert_response :success
-    assert flash.has_key?(:error)
+    assert flash.has_key?(:alert)
 
     # logout (activating a new email address should work this way too)
     logout
@@ -517,7 +517,7 @@ class UsersControllerTest < ActionController::TestCase
     # activate new email
     get :activate_new_email_address, {:new_email_activation_code => new_email_activation_code}
     assert_response :redirect
-    assert flash.has_key?(:success)
+    assert flash.has_key?(:notice)
     assert_redirected_to SimplyAuthenticate::Settings.default_redirect_to
 
     # email changed successfully
@@ -551,7 +551,7 @@ class UsersControllerTest < ActionController::TestCase
     # correct name and password update
     put :edit, {:id => @administrator.id, :user => {:name => 'MyNewName', :password => 'new-passwd'}, :role => {'administrator' => '1'}}
     assert_response :redirect
-    assert flash.has_key?(:success)
+    assert flash.has_key?(:notice)
 
     logout
 
@@ -563,26 +563,26 @@ class UsersControllerTest < ActionController::TestCase
     assert !User.find(@inactivated.id).is_activated?
     put :edit, {:id => @inactivated.id, :user => {:is_activated => '1'}, :role => {'user' => '1'}}
     assert_response :redirect
-    assert flash.has_key?(:success)
+    assert flash.has_key?(:notice)
     assert User.find(@inactivated.id).is_activated?
 
     # unblock user
     assert User.find(@blocked_activated.id).is_blocked?
     put :edit, {:id => @blocked_activated.id, :user => {:is_blocked => '0'}, :role => {'user' => '1'}}
     assert_response :redirect
-    assert flash.has_key?(:success)
+    assert flash.has_key?(:notice)
     assert !User.find(@blocked_activated.id).is_blocked?
 
     # take all user roles
     put :edit, {:id => @bob.id, :user => {}, :role => {}}
     assert_response :redirect
-    assert flash.has_key?(:success)
+    assert flash.has_key?(:notice)
     assert User.find(@bob.id).roles.empty?
 
     # add admin role
     put :edit, {:id => @bob.id, :user => {}, :role => {'administrator' => '1'}}
     assert_response :redirect
-    assert flash.has_key?(:success)
+    assert flash.has_key?(:notice)
 
     # check this admin role
     login_as(@bob)
@@ -597,7 +597,7 @@ class UsersControllerTest < ActionController::TestCase
     # access denied
     get :index
     assert_redirected_to SimplyAuthenticate::Settings.default_redirect_to
-    assert flash.has_key?(:error)
+    assert flash.has_key?(:alert)
 
     # login as administrator
     login_as(@administrator)

@@ -15,7 +15,7 @@ module SimplyAuthenticate
     # FILTER
     def login_required
       return if logged_in?
-      flash[:error] = 'Proszę się zalogować'
+      flash[:alert] = 'Proszę się zalogować'
       session[:return_to] = request.request_uri
       redirect_to login_path
     end
@@ -39,7 +39,7 @@ module SimplyAuthenticate
       return if !logged_in? # do nothing if we are not logged
       return if @current_user.name.present? and @current_user.gender.present? # do nothing if the profile is already filled in
       return if params[:controller] == SimplyAuthenticate::Settings.controller_name and (params[:action] == 'profile' or params[:action] == 'logout') # do nothing if we are in the 'profile' or 'logout' action
-      flash[:error] = 'Zanim zaczniesz korzystać z serwisu musisz uzupełnić swój profil'
+      flash[:alert] = 'Zanim zaczniesz korzystać z serwisu musisz uzupełnić swój profil'
       redirect_to profile_path # otherwise redirect to profile
     end
 
@@ -64,7 +64,7 @@ module SimplyAuthenticate
       # FILTERS: editor_role_required administrator_role_required etc. for controllers
       define_method "#{role.slug}_role_required" do
         return if send("#{role.slug}?")
-        flash[:error] = 'Brak wymaganych uprawnień'
+        flash[:alert] = 'Brak wymaganych uprawnień'
         redirect_to SimplyAuthenticate::Settings.default_redirect_to
       end
     end
@@ -74,21 +74,21 @@ module SimplyAuthenticate
     # FILTER
     def registration_allowed
       return if !defined?(registration_allowed?) or registration_allowed?
-      flash[:error] = 'Rejestracja jest obecnie wyłączona'
+      flash[:alert] = 'Rejestracja jest obecnie wyłączona'
       redirect_to SimplyAuthenticate::Settings.default_redirect_to
     end
 
     # FILTER
     def password_change_allowed
       return if !defined?(password_change_allowed?) or password_change_allowed?
-      flash[:error] = 'Zmiana hasła jest w tym momencie niemożliwa'
+      flash[:alert] = 'Zmiana hasła jest w tym momencie niemożliwa'
       redirect_to profile_path
     end
 
     # FILTER
     def password_reset_allowed
       return if !defined?(password_reset_allowed?) or password_reset_allowed?
-      flash[:error] = 'Reset hasła jest w tej chwili niemożliwy'
+      flash[:alert] = 'Reset hasła jest w tej chwili niemożliwy'
       redirect_to SimplyAuthenticate::Settings.default_redirect_to
     end
 
@@ -103,35 +103,35 @@ module SimplyAuthenticate
 
       # verify the legal requirements acceptance
       if SimplyAuthenticate::Settings.legal_requirements_message.present?
-        flash.now[:error] = 'Rejestracja wymaga wyrażenia zgody na przetwarzanie danych osobowych' and return if params[:legal_requirements].blank? or params[:legal_requirements][:accepted].blank? or params[:legal_requirements][:accepted] != '1'
+        flash.now[:alert] = 'Rejestracja wymaga wyrażenia zgody na przetwarzanie danych osobowych' and return if params[:legal_requirements].blank? or params[:legal_requirements][:accepted].blank? or params[:legal_requirements][:accepted] != '1'
       end
 
       # captcha_verification
 
       @user.register!
-      flash[:success] = 'Rejestracja pomyślna. Konto nie jest jeszcze aktywne. Na podany adres email została wysłana wiadomość z instrukcją jak je aktywować'
+      flash[:notice] = 'Rejestracja pomyślna. Konto nie jest jeszcze aktywne. Na podany adres email została wysłana wiadomość z instrukcją jak je aktywować'
       redirect_to SimplyAuthenticate::Settings.default_redirect_to
     rescue SimplyAuthenticate::Exceptions::NotRegistered
-      flash.now[:error] = 'Błąd podczas rejestracji'
+      flash.now[:alert] = 'Błąd podczas rejestracji'
     rescue ApplicationController::InvalidCaptcha
-      flash.now[:error] = 'Zła wartość w polu captcha (źle rozwiązane działanie matematyczne)'
+      flash.now[:alert] = 'Zła wartość w polu captcha (źle rozwiązane działanie matematyczne)'
     end
 
     # ACTIVATE
     def activate_account_login_and_redirect_to_profile
       @title = 'Aktywacja konta'
       session[:user_id] = User.find_and_activate_account!(params[:activation_code]).id
-      flash[:success] = 'Twoje konto jest teraz aktywne. Zostałeś automatycznie zalogowany. Aby dokończyć rejestrację w serwisie musisz uzupełnić swój profil'
+      flash[:notice] = 'Twoje konto jest teraz aktywne. Zostałeś automatycznie zalogowany. Aby dokończyć rejestrację w serwisie musisz uzupełnić swój profil'
       redirect_to profile_path
     rescue SimplyAuthenticate::Exceptions::ArgumentError
-      flash.now[:error] = 'Brak kodu aktywacji'
+      flash.now[:alert] = 'Brak kodu aktywacji'
     rescue SimplyAuthenticate::Exceptions::BadActivationCode
-      flash.now[:error] = 'Podany kod aktywacji nie został odnaleziony'
+      flash.now[:alert] = 'Podany kod aktywacji nie został odnaleziony'
     rescue SimplyAuthenticate::Exceptions::AlreadyActivated
-      flash[:success] = 'Twoje konto już zostało aktywowane. Możesz się zalogować'
+      flash[:notice] = 'Twoje konto już zostało aktywowane. Możesz się zalogować'
       redirect_to login_path
     rescue SimplyAuthenticate::Exceptions::UnauthorizedAccountBlocked
-      flash.now[:error] = 'Twoje konto jest zablokowane. Jego aktywacja nie jest możliwa'
+      flash.now[:alert] = 'Twoje konto jest zablokowane. Jego aktywacja nie jest możliwa'
     end
 
     # SEND_ACTIVATION_CODE
@@ -141,12 +141,12 @@ module SimplyAuthenticate
       @user = User.new
       return unless request.post?
       User.find_and_send_activation_code!(params[:user][:email])
-      flash[:success] = 'Na podany adres email został wysłany kod aktywacji wraz z instrukcją jak aktywować konto'
+      flash[:notice] = 'Na podany adres email został wysłany kod aktywacji wraz z instrukcją jak aktywować konto'
       redirect_to SimplyAuthenticate::Settings.default_redirect_to
     rescue SimplyAuthenticate::Exceptions::UnauthorizedWrongEmail
-      flash.now[:error] = 'Brak użytkownika o podanym adresie email'
+      flash.now[:alert] = 'Brak użytkownika o podanym adresie email'
     rescue SimplyAuthenticate::Exceptions::AlreadyActivated
-      flash[:success] = 'Twoje konto już zostało aktywowane. Możesz się zalogować'
+      flash[:notice] = 'Twoje konto już zostało aktywowane. Możesz się zalogować'
       redirect_to login_path
     end
 
@@ -164,15 +164,15 @@ module SimplyAuthenticate
       user.update_last_logged_times(:login_count => user.login_count + 1,:last_ip => user.current_ip, :current_ip => request.remote_ip, :last_logged_on => user.current_logged_on, :current_logged_on => Time.now)
       redirect_to_stored
     rescue SimplyAuthenticate::Exceptions::UnauthorizedWrongEmail
-      flash.now[:error] = 'Błędny email lub hasło'
+      flash.now[:alert] = 'Błędny email lub hasło'
     rescue SimplyAuthenticate::Exceptions::UnauthorizedWrongPassword
       User.find_by_email(params[:user][:email]).update_attributes(:last_failed_ip => request.remote_ip, :last_failed_logged_on => Time.now)
-      flash.now[:error] = 'Błędny email lub hasło'
+      flash.now[:alert] = 'Błędny email lub hasło'
     rescue SimplyAuthenticate::Exceptions::UnauthorizedNotActivated
       @inactivated = true
-      flash.now[:error] = 'Twoje konto nie zostało jeszcze aktywowane. Sprawdź swoją pocztę. Powinien znajdować się tam email z instrukcją aktywacji konta'
+      flash.now[:alert] = 'Twoje konto nie zostało jeszcze aktywowane. Sprawdź swoją pocztę. Powinien znajdować się tam email z instrukcją aktywacji konta'
     rescue SimplyAuthenticate::Exceptions::UnauthorizedAccountBlocked
-      flash.now[:error] = 'Twoje konto zostało zablokowane. Logowanie nie jest możliwe'
+      flash.now[:alert] = 'Twoje konto zostało zablokowane. Logowanie nie jest możliwe'
     end
 
     # FORGOT PASSWORD
@@ -181,10 +181,10 @@ module SimplyAuthenticate
       @user = User.new
       return unless request.post?
       User.find_and_reset_password!(params[:user][:email])
-      flash[:success]  = 'Nowe hasło zostało przesłane na podany adres email'
+      flash[:notice]  = 'Nowe hasło zostało przesłane na podany adres email'
       redirect_to login_path
     rescue ActiveRecord::RecordNotFound
-      flash.now[:error] = 'Odzyskanie hasła nie było możliwe (nieprawidłowy adres email)'
+      flash.now[:alert] = 'Odzyskanie hasła nie było możliwe (nieprawidłowy adres email)'
     end
 
     # PROFILE
@@ -196,9 +196,9 @@ module SimplyAuthenticate
       @user.update_profile(params[:user])
       # update ok, let @current_user share @user's data - we have to do this because there is no redirect after successful execution
       @current_user = @user
-      flash.now[:success] = 'Twój profil został uaktualniony'
+      flash.now[:notice] = 'Twój profil został uaktualniony'
     rescue SimplyAuthenticate::Exceptions::ProfileNotUpdated
-      flash.now[:error] = 'Wystąpił błąd podczas uaktualniania profilu'
+      flash.now[:alert] = 'Wystąpił błąd podczas uaktualniania profilu'
     end
 
     # CHANGE PASSWORD
@@ -208,13 +208,13 @@ module SimplyAuthenticate
       @user = User.find(@current_user.id)
       return unless request.put?
       @user.change_password(params[:user])
-      flash[:success] = 'Twoje hasło zostało zmienione'
+      flash[:notice] = 'Twoje hasło zostało zmienione'
       redirect_to profile_path
     rescue SimplyAuthenticate::Exceptions::UnauthorizedWrongPassword
       @user.errors.add('old_password', 'wprowadzono złe hasło')
-      flash.now[:error] = 'Zmiana hasła nie była możliwa'
+      flash.now[:alert] = 'Zmiana hasła nie była możliwa'
     rescue SimplyAuthenticate::Exceptions::PasswordNotChanged
-      flash.now[:error] = 'Wystąpił błąd podczas zmiany hasła'
+      flash.now[:alert] = 'Wystąpił błąd podczas zmiany hasła'
     end
 
     # CHANGE EMAIL
@@ -224,10 +224,10 @@ module SimplyAuthenticate
       @user = User.find(@current_user.id)
       return unless request.put?
       @user.change_email_address(params[:user][:new_email])
-      flash[:success] = 'Na podany adres email został wysłany list z linkiem aktywującym nowy adres email'
+      flash[:notice] = 'Na podany adres email został wysłany list z linkiem aktywującym nowy adres email'
       redirect_to profile_path
     rescue SimplyAuthenticate::Exceptions::ArgumentError, SimplyAuthenticate::Exceptions::EmailNotChanged
-      flash.now[:error] = 'Zmiana adresu email nie była możliwa'
+      flash.now[:alert] = 'Zmiana adresu email nie była możliwa'
     end
 
     # ACTIVATE NEW EMAIL ADDRESS
@@ -235,14 +235,14 @@ module SimplyAuthenticate
     def activate_new_email_address_and_redirect_to_default
       @title = 'Aktywacja nowego adresu email'
       User.find_and_activate_new_email_address!(params[:new_email_activation_code])
-      flash[:success] = 'Twój adres email został zmieniony'
+      flash[:notice] = 'Twój adres email został zmieniony'
       redirect_to SimplyAuthenticate::Settings.default_redirect_to
     rescue SimplyAuthenticate::Exceptions::ArgumentError
-      flash.now[:error] = 'Brak kodu aktywacji'
+      flash.now[:alert] = 'Brak kodu aktywacji'
     rescue ActiveRecord::RecordNotFound
-      flash.now[:error] = 'Podany kod aktywacji nie został odnaleziony'
+      flash.now[:alert] = 'Podany kod aktywacji nie został odnaleziony'
     rescue SimplyAuthenticate::Exceptions::EmailNotChanged
-      flash.now[:error] = 'Zmiana adresu email nie była możliwa'
+      flash.now[:alert] = 'Zmiana adresu email nie była możliwa'
     end
 
     # LOGOUT
@@ -250,7 +250,7 @@ module SimplyAuthenticate
       @current_user.forget_me
       reset_session
       cookies.delete :autologin_token
-      flash[:success] = 'Zostałeś wylogowany z systemu'
+      flash[:notice] = 'Zostałeś wylogowany z systemu'
       redirect_to SimplyAuthenticate::Settings.default_redirect_to
     end
 
@@ -266,7 +266,7 @@ module SimplyAuthenticate
       @user = User.find_by_id!(params[:id])
       @title = "Użytkownik: #{@user.name} [#{@user.email}]"
     rescue ActiveRecord::RecordNotFound
-      flash[:error] = 'Nie odnaleziono użytkownika o takim id'
+      flash[:alert] = 'Nie odnaleziono użytkownika o takim id'
     end
 
     def edit_user
@@ -276,13 +276,13 @@ module SimplyAuthenticate
       return unless request.put?
       @user.update_user(params[:user])
       @user.update_roles(params[:role])
-      flash[:success] = 'Dane użytkownika uaktualnione'
+      flash[:notice] = 'Dane użytkownika uaktualnione'
       redirect_to user_show_path(:id => @user)
     rescue ActiveRecord::RecordNotFound
-      flash[:error] = 'Nie odnaleziono użytkownika o takim id'
+      flash[:alert] = 'Nie odnaleziono użytkownika o takim id'
       redirect_to users_path
     rescue SimplyAuthenticate::Exceptions::UserNotUpdated
-      flash.now[:error] = 'Wystąpił błąd podczas uaktualniania danych użytkownika'
+      flash.now[:alert] = 'Wystąpił błąd podczas uaktualniania danych użytkownika'
     end
 
   end

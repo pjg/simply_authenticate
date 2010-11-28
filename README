@@ -310,7 +310,7 @@ aptitude install sqlite3 libsqlite3-dev
 gem install sqlite3-ruby
 
 
-If you are running in the errors like this one:
+If you are running into errors like this one:
 
 SQLite3::SQLException: index name already exists
 
