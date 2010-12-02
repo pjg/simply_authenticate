@@ -66,7 +66,7 @@ module SimplyAuthenticate
         define_method "#{role.slug}_role_required" do
           return if send("#{role.slug}?")
           flash[:alert] = 'Brak wymaganych uprawnień'
-          redirect_to SimplyAuthenticate::Settings.default_redirect_to
+          redirect_to login_path
         end
       end
     end

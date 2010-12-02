@@ -596,7 +596,7 @@ class UsersControllerTest < ActionController::TestCase
 
     # access denied
     get :index
-    assert_redirected_to SimplyAuthenticate::Settings.default_redirect_to
+    assert_redirected_to login_path
     assert flash.has_key?(:alert)
 
     # login as administrator
