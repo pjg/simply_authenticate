@@ -181,15 +181,15 @@ config/initializers/simply_authenticate.rb
   # you can see all of the things you can configure in the lib/simply_authenticate_settings.rb file
 
 
-And finally, add login/logout links to the application.html.erb:
+And finally add the login/logout links to the application.html.erb:
 
-<% if logged_in? %>
+<% if logged_in? -%>
 <%= link_to 'Panel użytkownika', panel_path %>
 <%= link_to 'Wyloguj mnie »', logout_path %>
-<% else %>
+<% else -%>
 <%= link_to 'Rejestracja', register_path if registration_allowed? %>
 <%= link_to 'Logowanie »', login_path %>
-<% end %>
+<% end -%>
 
 
 Optional steps
@@ -297,6 +297,16 @@ logged_in?
 
 editor?
 # works for all roles defined
+
+
+ADDING USERS FROM THE CONSOLE
+=============================
+
+user = User.new(:email => 'test@example.com', :password => 'test123', :password_confirmation => 'test123', :name => 'Test', :gender => 'm')
+user.is_activated = true
+user.activated_on = Time.now
+user.roles << Role.find_by_slug('user')
+user.save
 
 
 TESTING
