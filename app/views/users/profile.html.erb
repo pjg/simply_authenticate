@@ -13,6 +13,6 @@
 <%= render :partial => 'detailed_profile' %>
 
 <p class="submit"><%= f.submit 'Uaktualnij profil', :class => 'button' %>
-<%= link_to 'Anuluj', SimplyAuthenticate::Settings.default_redirect_to, :class => 'cancel' %></p>
+<%= link_to 'Anuluj', SimplyAuthenticate::Settings.default_logged_in_redirect_to, :class => 'cancel' %></p>
 
 <%- end -%>

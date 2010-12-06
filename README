@@ -1,7 +1,7 @@
 SimplyAuthenticate
 ==================
 
-SimplyAuthenticate is a Rails plugin providing a relatively simple but complete role based authentication system.
+SimplyAuthenticate is a Rails plugin providing a relatively simple but on the other hand quite complete role based authentication system.
 
 
 Requirements
@@ -217,7 +217,7 @@ script/generate migration add_settings_for_the_simply_authenticate_plugin
 
 --
 
-It's best to have '/panel' action, where user will be redirected (by default, using the SimplyAuthenticate::Settings.default_redirect_to config option) after logging in:
+It's best to have '/panel' action, where user will be redirected to (by default, using the SimplyAuthenticate::Settings.default_logged_in_redirect_to configuration option) after logging in:
 
 routes.rb
   map.panel '/panel', :controller => 'site', :action => 'panel'

@@ -40,14 +40,15 @@ module SimplyAuthenticate
     # Autologin expire time (in days)
     @@autologin_expires = 30
 
-    # Default redirect_to destination (after registering, when no appropriate credentials, etc.)
+    # Default redirect_to destinations (after registering, when no appropriate credentials, etc.) (two: when being logged in and when being logged out) (can be set to the same path)
     # Unfortunately you cannot use 'root_path' et al.
-    @@default_redirect_to = '/panel'
+    @@default_logged_in_redirect_to = '/panel'
+    @@default_logged_out_redirect_to = '/'
 
     # Legal notice and legal requirements message (when registering)
     @@legal_notice = ''
     @@legal_requirements_message = ''
 
-    mattr_accessor :controller_name, :path_names, :notifications, :roles, :autologin_expires, :default_redirect_to, :legal_notice, :legal_requirements_message
+    mattr_accessor :controller_name, :path_names, :notifications, :roles, :autologin_expires, :default_logged_in_redirect_to, :default_logged_out_redirect_to, :legal_notice, :legal_requirements_message
   end
 end

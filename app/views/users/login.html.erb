@@ -17,6 +17,6 @@
 <%= label_tag :remember_me, 'Zapamiętaj mnie', :class => 'checkbox' %></p>
 
 <p><%= f.submit "Zaloguj", :class => "button" %>
-<%= link_to 'Anuluj', root_path, :class => 'cancel' %></p>
+<%= link_to 'Anuluj', SimplyAuthenticate::Settings.default_logged_out_redirect_to, :class => 'cancel' %></p>
 
 <%- end -%>

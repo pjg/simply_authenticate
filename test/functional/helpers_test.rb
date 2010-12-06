@@ -150,7 +150,7 @@ class UsersControllerTest < ActionController::TestCase
     assert flash.has_key?(:notice)
     assert_response :redirect
     assert flash.has_key?(:notice)
-    assert_redirected_to SimplyAuthenticate::Settings.default_redirect_to
+    assert_redirected_to SimplyAuthenticate::Settings.default_logged_out_redirect_to
 
     # check proper role assignment
     @albert = User.find_by_email(email)
@@ -208,7 +208,7 @@ class UsersControllerTest < ActionController::TestCase
 
     # after login the first redirect is always to the SimplyAuthenticate::Settings.default_redirect_to and from there we are redirected to profile_path
     login_as(@albert, :password => password)
-    assert_redirected_to SimplyAuthenticate::Settings.default_redirect_to
+    assert_redirected_to SimplyAuthenticate::Settings.default_logged_in_redirect_to
 
     # try to fetch some other action to see that without filling in the profile we will be redirected to profile
     get :root
@@ -271,7 +271,7 @@ class UsersControllerTest < ActionController::TestCase
 
     # login
     login_as(@bob)
-    assert_redirected_to SimplyAuthenticate::Settings.default_redirect_to
+    assert_redirected_to SimplyAuthenticate::Settings.default_logged_in_redirect_to
 
     logout
   end
@@ -295,7 +295,7 @@ class UsersControllerTest < ActionController::TestCase
 
     # login again but this time we should be redirected to the default action
     login_as(@bob)
-    assert_redirected_to SimplyAuthenticate::Settings.default_redirect_to
+    assert_redirected_to SimplyAuthenticate::Settings.default_logged_in_redirect_to
   end
 
   def test_login_from_cookie
@@ -517,7 +517,7 @@ class UsersControllerTest < ActionController::TestCase
     get :activate_new_email_address, {:new_email_activation_code => new_email_activation_code}
     assert_response :redirect
     assert flash.has_key?(:notice)
-    assert_redirected_to SimplyAuthenticate::Settings.default_redirect_to
+    assert_redirected_to SimplyAuthenticate::Settings.default_logged_out_redirect_to
 
     # email changed successfully
     @bob = User.find(@bob.id)
@@ -636,7 +636,7 @@ class UsersControllerTest < ActionController::TestCase
     assert !@response.has_session_object?(:user_id)
     assert_nil session[:user_id]
     assert_nil cookies[:autologin_token]
-    assert_redirected_to SimplyAuthenticate::Settings.default_redirect_to
+    assert_redirected_to SimplyAuthenticate::Settings.default_logged_out_redirect_to
   end
 
 end

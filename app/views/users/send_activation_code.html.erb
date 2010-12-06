@@ -4,6 +4,6 @@
 <%= f.text_field :email, :class => "text", :size => 40 %></p>
 
 <p><%= f.submit "Prześlij kod", :class => "button" %>
-<%= link_to 'Anuluj', SimplyAuthenticate::Settings.default_redirect_to, :class => 'cancel' %></p>
+<%= link_to 'Anuluj', SimplyAuthenticate::Settings.default_logged_out_redirect_to, :class => 'cancel' %></p>
 
 <%- end -%>

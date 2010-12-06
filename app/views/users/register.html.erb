@@ -15,6 +15,6 @@
 <%- end %>
 
 <p><%= f.submit "Rejestracja", :class => "button" %>
-<%= link_to 'Anuluj', root_path, :class => 'cancel' %></p>
+<%= link_to 'Anuluj', SimplyAuthenticate::Settings.default_logged_out_redirect_to, :class => 'cancel' %></p>
 
 <%- end -%>
