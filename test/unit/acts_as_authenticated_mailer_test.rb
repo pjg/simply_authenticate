@@ -1,5 +1,7 @@
 require File.dirname(__FILE__) + '/../test_helper'
 
+require File.dirname(__FILE__) + '/../fixtures/notifications.rb'
+
 class ActsAsAuthenticatedMailerTest < ActiveSupport::TestCase
 
   def setup

@@ -3,6 +3,7 @@ require 'action_controller'
 require 'action_controller/test_process'
 
 require File.dirname(__FILE__) + '/../fixtures/users_controller.rb'
+require File.dirname(__FILE__) + '/../fixtures/notifications.rb'
 
 class UsersControllerTest < ActionController::TestCase
 
