@@ -60,7 +60,6 @@ class UsersControllerTest < ActionController::TestCase
     assert user?
     assert !editor?
     assert !administrator?
-    assert !moderator?
 
     # administrator
     session[:user_id] = @administrator.id
@@ -69,16 +68,14 @@ class UsersControllerTest < ActionController::TestCase
     assert user?
     assert !editor?
     assert administrator?
-    assert !moderator?
 
-    # moderator
-    session[:user_id] = @moderator.id
+    # editor
+    session[:user_id] = @editor.id
     load_user
     assert logged_in?
     assert user?
-    assert !editor?
+    assert editor?
     assert !administrator?
-    assert moderator?
   end
 
   def test_login_required
