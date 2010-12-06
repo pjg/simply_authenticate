@@ -4,7 +4,7 @@
 <p>Płeć: <strong><%= 'Kobieta' if @user.gender == 'f'%><%= 'Mężczyzna' if @user.gender == 'm' %></strong></p>
 <%- end -%>
 
-<p>Adres email: <%= obfuscate_email(@user.email) %></p>
+<p>Adres email: <%= mail_to(@user.email) %></p>
 
 <p>Uprawnienia: <strong><%= @user.roles.collect {|r| r.name.mb_chars.downcase}.join("</strong>, <strong>") %></strong></p>
 
