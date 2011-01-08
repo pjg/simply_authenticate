@@ -25,6 +25,7 @@ Installation
 git submodule add git://github.com/pjg/simply_authenticate.git vendor/plugins/simply_authenticate
 git commit -m "Add simply_authenticate plugin as a submodule"
 
+
 script/generate model user
   class User < ActiveRecord::Base
     acts_as_authenticated
@@ -88,10 +89,10 @@ script/generate migration create_roles_users
 script/generate migration add_default_roles
   # Add roles you'd like your system to have. Administrator and user roles are required
   def self.up
-    Role.new(:slug => 'user', :name => 'Użytkownik').save
-    Role.new(:slug => 'administrator', :name => 'Administrator').save
-    Role.new(:slug => 'editor', :name => 'Redaktor').save
-    Role.new(:slug => 'moderator', :name => 'Moderator').save
+    Role.create(:slug => 'user', :name => 'Użytkownik')
+    Role.create(:slug => 'administrator', :name => 'Administrator')
+    Role.create(:slug => 'editor', :name => 'Redaktor')
+    Role.create(:slug => 'moderator', :name => 'Moderator')
   end
 
   def self.down
@@ -100,6 +101,11 @@ script/generate migration add_default_roles
     Role.find_by_slug('administrator').destroy
     Role.find_by_slug('user').destroy
   end
+
+
+run the migrations:
+  rake db:migrate
+
 
 script/generate controller users
   class UsersController < ApplicationController
@@ -195,18 +201,13 @@ And finally add the login/logout links to the application.html.erb:
 Optional steps
 --------------
 
-Install the simply_settings plugin:
-
-git submodule add git://github.com/pjg/simply_settings.git vendor/plugins/simply_settings
-git commit -m "Add simply_settings plugin as a submodule"
-
-and add settings for the simply_authenticate plugin ('1' means true/allowed):
+Install the simply_settings plugin (https://github.com/pjg/simply_settings) and add settings for the simply_authenticate plugin ('1' means true/allowed):
 
 script/generate migration add_settings_for_the_simply_authenticate_plugin
   def self.up
-    Setting.new(:slug => 'registration_allowed', :value => '1', :name => 'Możliwość rejestracji użytkowników?').save
-    Setting.new(:slug => 'password_change_allowed', :value => '1', :name => 'Użytkownik może zmienić swoje hasło?').save
-    Setting.new(:slug => 'password_reset_allowed', :value => '1', :name => 'Użytkownik może zresetować swoje hasło?').save
+    Setting.create(:slug => 'registration_allowed', :value => '1', :name => 'Możliwość rejestracji użytkowników?')
+    Setting.create(:slug => 'password_change_allowed', :value => '1', :name => 'Użytkownik może zmienić swoje hasło?')
+    Setting.create(:slug => 'password_reset_allowed', :value => '1', :name => 'Użytkownik może zresetować swoje hasło?')
   end
 
   def self.down
@@ -214,6 +215,8 @@ script/generate migration add_settings_for_the_simply_authenticate_plugin
     Setting.find_by_slug('password_change_allowed').destroy
     Setting.find_by_slug('password_reset_allowed').destroy
   end
+
+rake db:migrate
 
 --
 
@@ -241,12 +244,10 @@ application.js (jQuery)
 // CANCEL buttons from hrefs
 $('a.cancel:contains("Anuluj")').each(function() {
   var redirect_to = $(this).attr('href')
-
   var button = $('<input type="button" class="cancel" value="Anuluj" />')
   button.click(function() {
-    $(location).attr('href', redirect_to)
+    window.location = redirect_to
   })
-
   $(this).replaceWith(button)
 })
 
@@ -345,4 +346,4 @@ See: simply_authenticate/lib/simply_authenticate_settings.rb
 
 
 
-Copyright (c) 2009-2010 Paweł Gościcki, released under the MIT license
+Copyright (c) 2009-2011 Paweł Gościcki, released under the MIT license
