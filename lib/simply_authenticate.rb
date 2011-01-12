@@ -31,5 +31,4 @@ ActionController::Base.send :filter_parameter_logging, :password, :password_conf
 
 # Notifications mailer setup
 ActionMailer::Base.send :include, SimplyAuthenticate::ActsAsAuthenticatedMailer
-ActionMailer::Base.template_root = File.expand_path(File.dirname(__FILE__) + '/../app/views/')
 ActionMailer::Base.delivery_method = :sendmail
